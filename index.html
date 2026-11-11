@@ -197,9 +197,47 @@ svg text{font-family:'Montserrat',sans-serif}
 .stg li.bad{color:var(--red)}.stg li.warn{color:#7A5B00}.stg li.ok{color:var(--green)}
 .pbar{height:10px;background:#EFE9CF;border-radius:6px;overflow:hidden;margin-top:10px}
 .pbar i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--bronze),var(--gold));transition:width .2s}
+
+/* ===== ĐĂNG NHẬP & PHÂN QUYỀN ===== */
+#loginGate{position:fixed;inset:0;background:radial-gradient(circle at 50% 25%,#163868 0%,var(--navy) 75%);z-index:500;display:flex;align-items:center;justify-content:center;padding:18px}
+#loginGate.hide{display:none}
+.lbox{background:#fff;border-radius:14px;border-top:5px solid var(--gold);width:min(420px,100%);padding:28px 26px 24px;box-shadow:0 24px 60px rgba(0,0,0,.55);text-align:center}
+.lbox .lmark{width:48px;height:48px;margin:0 auto 10px;display:block}
+.lbox h2{font-family:'Playfair Display',serif;color:var(--navy);font-size:21px;margin-bottom:4px}
+.lbox p{color:var(--muted);font-size:12px;margin:0 0 18px}
+.lbox .linp{width:100%;padding:10px 12px;border:1.5px solid var(--line);border-radius:8px;font:600 14px 'Montserrat',sans-serif;color:var(--navy);text-align:center;letter-spacing:1.2px;outline:none;transition:border-color .2s,box-shadow .2s}
+.lbox .linp:focus{border-color:var(--gold);box-shadow:0 0 0 3px rgba(212,175,55,.28)}
+.lbox .lbtn{width:100%;margin-top:12px;padding:10px 16px;border-radius:8px;font-size:13px}
+.lbox .lerr{color:var(--red);font-size:11.5px;font-weight:600;margin-top:10px;min-height:17px}
+.role-badge{display:inline-flex;align-items:center;gap:6px;padding:4px 10px;border-radius:16px;font-size:11px;font-weight:700;letter-spacing:.4px;border:1px solid rgba(212,175,55,.55);color:var(--gold2);background:rgba(212,175,55,.12);white-space:nowrap}
+.role-badge.admin{background:var(--gold);color:var(--navy);border-color:var(--gold)}
+.alert-grid{display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:10px;margin-bottom:14px}
+@media(max-width:1250px){.alert-grid{grid-template-columns:repeat(3,minmax(0,1fr))}}
+@media(max-width:860px){.alert-grid{grid-template-columns:1fr 1fr}}
+.alcard{background:#fff;border:1px solid var(--line);border-left:4px solid var(--gold);border-radius:8px;padding:10px 12px;cursor:pointer;transition:transform .12s,box-shadow .12s}
+.alcard:hover{background:#FFFBEA;transform:translateY(-1px);box-shadow:0 4px 12px rgba(11,31,58,.1)}
+.alcard.on{background:#FFF1BD;border-color:var(--navy);border-left-width:5px}
+.alcard.bad{border-left-color:var(--red)}
+.alcard.warn{border-left-color:#D9822B}
+.alcard.info{border-left-color:var(--navy3)}
+.alcard.ok{border-left-color:var(--green)}
+.alcard .at{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted)}
+.alcard .av{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--navy);margin:2px 0}
+.alcard .as{font-size:11px;color:var(--ink)}
 </style>
 </head>
 <body>
+<div id="loginGate">
+  <form class="lbox" id="loginForm" onsubmit="return false;">
+    <svg class="lmark" viewBox="0 0 40 40"><defs><linearGradient id="ggL" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#D4AF37"/><stop offset="1" stop-color="#8A6608"/></linearGradient></defs>
+      <path d="M20 2 L38 15 L20 38 L2 15 Z" fill="none" stroke="url(#ggL)" stroke-width="2.4"/><path d="M2 15 H38 M13 15 L20 38 L27 15 L20 2 Z" fill="none" stroke="url(#ggL)" stroke-width="1.6"/></svg>
+    <h2>ĐĂNG NHẬP DASHBOARD</h2>
+    <p>Nhập mật khẩu phân quyền để truy cập hệ thống theo dõi hàng Sale theo danh mục</p>
+    <input type="password" id="loginPass" class="linp" placeholder="Nhập mật khẩu truy cập…" autocomplete="current-password" autofocus>
+    <button type="submit" class="btn primary lbtn" id="btnLoginSubmit">Truy cập hệ thống</button>
+    <div class="lerr" id="loginErr"></div>
+  </form>
+</div>
 <div class="topbar" id="topbar">
   <div class="tb-row1">
     <div class="brand">
@@ -218,9 +256,11 @@ svg text{font-family:'Montserrat',sans-serif}
     <div class="actions">
       <div class="updinfo" id="updinfo">Chưa có dữ liệu</div>
       <div class="seg" id="modeSeg" title="Chế độ xem chỉ số"><button data-mode="val" class="on">Giá trị</button><button data-mode="qty">Số lượng</button></div>
+      <span class="role-badge" id="roleBadge">Khách</span>
       <button class="btn" id="btnReload" title="Đọc lại file Template_Theo_Doi_HH_Sale_Danh_Muc.xlsx gốc">⟳ Đọc lại Template</button>
       <button class="btn" id="btnExportXlsx" title="Xuất dữ liệu hiện tại ra file Template_Theo_Doi_HH_Sale_Danh_Muc.xlsx">⬇ Xuất Template Excel</button>
       <button class="btn primary" id="btnUpload">⬆ Nạp dữ liệu từ máy</button>
+      <button class="btn" id="btnLogout" title="Đổi tài khoản / Đăng xuất">⎋ Đổi quyền</button>
     </div>
   </div>
   <div class="tb-row2" id="filters"></div>
@@ -572,7 +612,7 @@ const BAND_ORDER = ['< 1 tr','1 – 3 tr','3 – 5 tr','5 – 10 tr','10 – 20 
 
 /* ====================== GIAO DIỆN ====================== */
 const C = { navy:'#0B1F3A', navy2:'#12305A', steel:'#3C5A8A', gold:'#D4AF37', gold2:'#E8D9A8', bronze:'#A67C00', sky:'#9FB3D1', red:'#B3261E', green:'#2E7D32' };
-const S = { M:null, raw:null, meta:{}, user:{ canUpload:true }, mode:'val', page:'overview', F:{}, target:30, heat:{}, selSku:null, skuView:'sku', skuFlag:'all', stg:[], busy:false, _cx:{} };
+const S = { M:null, raw:null, meta:{}, role:null, user:{ canUpload:true }, mode:'val', page:'overview', F:{}, target:30, heat:{}, selSku:null, skuView:'sku', skuFlag:'all', stg:[], busy:false, _cx:{} };
 const nf = new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 0 });
 const $ = id => document.getElementById(id);
 function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
@@ -903,6 +943,7 @@ function pageOverview(){
       { k:'ic', l:'Vốn tồn', r:1, bar:1, fmt:fmtFull }, { k:'iq', l:'SL tồn', r:1, fmt:fmtFull },
       { k:'sq', l:'SL bán', r:1, fmt:fmtFull }, { k:'st', l:'ST %', r:1, fmt:(v, g) => stTag(g) } ],
     def: { k:'ic', dir:'desc' }, rowF: 'store', rowV: g => g.key, sel: g => S.F.store === g.key, pageSize: 10, tool: false, csv: false, maxH: 380 });
+  const isAdmin = S.role === 'admin';
   return kp +
     '<div class="grid g21">' +
       card('Xu hướng bán theo ngày', unitLbl() + ' · cột = trong ngày (trục trái), đường = lũy kế (trục phải)', '<div class="svgbox">' + trendSVG(dailySeries(M, c.F, c.sal)) + '</div>') +
@@ -910,9 +951,12 @@ function pageOverview(){
     '<div class="grid g2">' +
       card('Cơ cấu theo Nhãn hàng', 'Tỷ trọng Tồn so với Bán — lệch càng lớn càng cần cân đối', hbars(shareRows(bG), { f:'brand', series:MIXSER(), fmt:v => fmtPct(v) })) +
       card('Cơ cấu theo Dòng hàng', 'Tỷ trọng Tồn so với Bán', hbars(shareRows(lG), { f:'line', series:MIXSER(), fmt:v => fmtPct(v) })) + '</div>' +
-    '<div class="grid g21">' +
-      card('Bản đồ Cửa hàng: Tồn × Bán', 'Mỗi bong bóng là 1 CH (kích thước = SL tồn; vàng = đạt mục tiêu ST). Bấm để lọc.', '<div class="svgbox">' + bubbleSVG(sG, storeName) + '</div>') +
-      card('Top CH cần xử lý', 'CH có tồn nhưng ST thấp hơn mục tiêu (' + S.target + '%), xếp theo vốn tồn', top) + '</div>';
+    (isAdmin
+      ? '<div class="grid g21">' +
+          card('Bản đồ Cửa hàng: Tồn × Bán', 'Mỗi bong bóng là 1 CH (kích thước = SL tồn; vàng = đạt mục tiêu ST). Bấm để lọc.', '<div class="svgbox">' + bubbleSVG(sG, storeName) + '</div>') +
+          card('Top CH cần xử lý', 'CH có tồn nhưng ST thấp hơn mục tiêu (' + S.target + '%), xếp theo vốn tồn', top) + '</div>'
+      : '<div class="grid">' +
+          card('Bản đồ Cửa hàng: Tồn × Bán', 'Mỗi bong bóng là 1 CH (kích thước = SL tồn; vàng = đạt mục tiêu ST). Bấm để lọc.', '<div class="svgbox">' + bubbleSVG(sG, storeName) + '</div>') + '</div>');
 }
 
 function pageAsm(){
@@ -981,8 +1025,8 @@ function pageStore(){
     '<div class="grid g12">' +
       card('So sánh theo Phân loại CH', 'Tồn vs Bán', hbars(pairRows(kG), { f:'klass', series:SER(), fmt:f })) +
       card('Xu hướng bán theo ngày', S.F.store ? 'Của CH đang chọn' : 'Toàn bộ CH trong phạm vi lọc', '<div class="svgbox">' + trendSVG(dailySeries(M, c.F, c.sal)) + '</div>') + '</div>' +
-    card('Danh sách Cửa hàng', 'Sắp xếp bằng cách bấm tiêu đề cột · bấm dòng để lọc theo CH', t) + '<div style="height:14px"></div>' +
-    card('CH chưa phát sinh bán (' + none.length + ' CH)', 'Dùng để nhắc việc CHT', t2, mails.length ? '<button class="btn dark" data-act="copymail" data-n="' + mails.length + '">Sao chép ' + mails.length + ' email CHT</button>' : '');
+    card('Danh sách Cửa hàng', 'Sắp xếp bằng cách bấm tiêu đề cột · bấm dòng để lọc theo CH', t) +
+    (S.role === 'admin' ? '<div style="height:14px"></div>' + card('Cảnh báo CH chưa phát sinh bán (' + none.length + ' CH)', 'Dùng để nhắc việc CHT', t2, mails.length ? '<button class="btn dark" data-act="copymail" data-n="' + mails.length + '">Sao chép ' + mails.length + ' email CHT</button>' : '') : '');
 }
 
 function pageBrand(){
@@ -1009,7 +1053,7 @@ function pageBrand(){
   });
   const skuT = tbl('brand_sku', { rows: aggregate(cG.inv, cG.sal, r => r.sku, cG.days).map(g => Object.assign(g, M.prods.get(g.key) ? { brand: M.prods.get(g.key).brand, line: M.prods.get(g.key).line } : { brand: NA_DM, line: NA_DM })).filter(g => g.iq > 0 || g.sq > 0),
     cols: [{ k:'key', l:'Mã SP' }, { k:'brand', l:'Nhãn' }, { k:'line', l:'Dòng' }, { k:'iq', l:'SL tồn', r:1, bar:1, fmt:fmtFull }, { k:'ic', l:'Vốn tồn', r:1, bar:1, fmt:fmtFull }, { k:'sq', l:'SL bán', r:1, fmt:fmtFull }, { k:'sr', l:'DT bán', r:1, bar:1, fmt:fmtFull }, { k:'st', l:'ST %', r:1, fmt:(v, g) => stTag(g) }],
-    def: { k:'ic', dir:'desc' }, rowAct:'pickSku', rowV:g => g.key, searchFn:g => g.key + ' ' + g.brand + ' ' + g.line, pageSize:15, maxH:420, file:'SKU_theo_nhan_dong' });
+    def: { k:'ic', dir:'desc' }, rowAct: S.role === 'admin' ? 'pickSku' : '', rowV:g => g.key, searchFn:g => g.key + ' ' + g.brand + ' ' + g.line, pageSize:15, maxH:420, file:'SKU_theo_nhan_dong' });
   return '<div class="grid g21">' +
       card('Ma trận Nhãn × Dòng hàng', 'Chọn chỉ số; bấm ô để lọc cả Nhãn và Dòng', h.html, h.sel) +
       card('Chênh lệch cơ cấu: Bán − Tồn', 'Điểm % (pp): dương (vàng) = bán nhanh hơn mức tồn → nên bổ sung; âm (navy) = tồn đang dày', '<h3 style="font-size:12px;margin:2px 0 4px">Theo Nhãn</h3>' + diverge(diff(bG), { f:'brand' }) + '<h3 style="font-size:12px;margin:10px 0 4px">Theo Dòng hàng</h3>' + diverge(diff(lG), { f:'line' })) + '</div>' +
@@ -1024,51 +1068,300 @@ function pageBrand(){
 
 function skuGroups(c){
   const M = S.M;
+  // Tính thêm thống kê theo SKU × CH để phát hiện cảnh báo điều chuyển
+  const bySkuStore = new Map();
+  c.inv.forEach(r => {
+    const k = r.sku + '\u0001' + r.store;
+    let o = bySkuStore.get(k);
+    if (!o) { o = { sku: r.sku, store: r.store, iq: 0, ic: 0, sq: 0, sr: 0, klass: r.klass }; bySkuStore.set(k, o); }
+    o.iq += r.qty; o.ic += r.cost;
+  });
+  c.sal.forEach(r => {
+    const k = r.sku + '\u0001' + r.store;
+    let o = bySkuStore.get(k);
+    if (!o) { o = { sku: r.sku, store: r.store, iq: 0, ic: 0, sq: 0, sr: 0, klass: r.klass }; bySkuStore.set(k, o); }
+    o.sq += r.qty; o.sr += r.rev;
+  });
+
+  const skuMeta = new Map();
+  bySkuStore.forEach(o => {
+    let m = skuMeta.get(o.sku);
+    if (!m) {
+      m = { outSoldStores: [], idleStores: [], nonSaleInvQty: 0, nonSaleInvCost: 0, nonSaleStores: [], maxStQty: 0 };
+      skuMeta.set(o.sku, m);
+    }
+    if (o.sq > 0 && o.iq === 0) m.outSoldStores.push(o.store);
+    if (o.iq > 0 && o.sq === 0) m.idleStores.push({ store: o.store, iq: o.iq, ic: o.ic, klass: o.klass });
+    if (o.iq > 0 && String(o.klass).toLowerCase().indexOf('không chạy') >= 0) {
+      m.nonSaleInvQty += o.iq;
+      m.nonSaleInvCost += o.ic;
+      m.nonSaleStores.push(o.store);
+    }
+    if (o.iq > m.maxStQty) m.maxStQty = o.iq;
+  });
+
   return aggregate(c.inv, c.sal, r => r.sku, c.days).filter(g => g.iq !== 0 || g.sq !== 0).map(g => {
     const p = M.prods.get(g.key);
-    return Object.assign(g, { brand: p ? p.brand : NA_DM, line: p ? p.line : NA_DM, discL: p && p.disc != null ? pctLabel(p.disc) : 'N/A' });
+    const m = skuMeta.get(g.key) || { outSoldStores: [], idleStores: [], nonSaleInvQty: 0, nonSaleInvCost: 0, nonSaleStores: [], maxStQty: 0 };
+    // Phân loại mức ưu tiên cảnh báo điều chuyển
+    let alertCode = 'normal', alertLabel = '', alertCls = '', transferHint = '';
+    const needPull = m.outSoldStores.length > 0 && m.idleStores.length > 0;
+    const hasNonSale = m.nonSaleInvQty > 0;
+    const isHeavyStuck = g.sq === 0 && (g.iq >= 3 || g.ic >= 15e6);
+    const isStuck = g.sq === 0 && g.iq > 0;
+    const isLowStockFast = g.sq > 0 && g.iq > 0 && g.st >= 0.5;
+
+    if (needPull) {
+      alertCode = ' rebalance';
+      alertLabel = '🔥 Cần điều chuyển ngay';
+      alertCls = 'bad';
+      const srcList = m.idleStores.slice().sort((a,b) => b.iq - a.iq).slice(0, 2).map(x => x.store + '(' + x.iq + ')').join(', ');
+      const dstList = m.outSoldStores.slice(0, 2).join(', ');
+      transferHint = 'Rút từ CH ' + srcList + ' → cấp CH đứt tồn ' + dstList;
+    } else if (hasNonSale && g.sq > 0) {
+      alertCode = 'nonsale';
+      alertLabel = '⚡ Tồn CH Không Sale (Mã bán chạy)';
+      alertCls = 'bad';
+      transferHint = 'Kéo ' + m.nonSaleInvQty + ' SP từ CH Không chạy Sale (' + m.nonSaleStores.slice(0,2).join(', ') + ') về CH Có chạy Sale';
+    } else if (isHeavyStuck) {
+      alertCode = 'heavystuck';
+      alertLabel = '⚠ Tồn ứ đọng cao (≥3 SP / ≥15tr)';
+      alertCls = 'warn';
+      const srcList = m.idleStores.slice().sort((a,b) => b.ic - a.ic).slice(0, 2).map(x => x.store + '(' + x.iq + ')').join(', ');
+      transferHint = 'Xoay vòng / đổi mẫu từ CH: ' + srcList;
+    } else if (hasNonSale) {
+      alertCode = 'nonsale';
+      alertLabel = '📦 Tồn tại CH Không chạy Sale';
+      alertCls = 'warn';
+      transferHint = 'Có ' + m.nonSaleInvQty + ' SP (' + fmtMoney(m.nonSaleInvCost) + ') nằm ở ' + m.nonSaleStores.length + ' CH Không chạy Sale';
+    } else if (isLowStockFast) {
+      alertCode = 'fast';
+      alertLabel = '🚀 Bán nhanh – Sắp cạn tồn';
+      alertCls = 'ok';
+      transferHint = 'ST đạt ' + fmtPct(g.st) + ' — ưu tiên gom về CH trung tâm';
+    } else if (g.iq === 0 && g.sq > 0) {
+      alertCode = 'out';
+      alertLabel = 'Hết tồn toàn vùng';
+      alertCls = 'info';
+      transferHint = 'Đã bán hết ' + g.sq + ' SP';
+    } else if (isStuck) {
+      alertCode = 'stuck';
+      alertLabel = 'Tồn – chưa bán';
+      alertCls = 'warn';
+      transferHint = 'Tồn rải tại ' + g.nInvSt + ' CH';
+    }
+
+    return Object.assign(g, {
+      brand: p ? p.brand : NA_DM,
+      line: p ? p.line : NA_DM,
+      discL: p && p.disc != null ? pctLabel(p.disc) : 'N/A',
+      alertCode: alertCode.trim(),
+      alertLabel,
+      alertCls,
+      transferHint,
+      outSoldCnt: m.outSoldStores.length,
+      nonSaleQty: m.nonSaleInvQty,
+      nonSaleCost: m.nonSaleInvCost,
+      idleCnt: m.idleStores.length
+    });
   });
 }
+
+function buildTransferPlan(c){
+  const M = S.M;
+  const bySku = new Map();
+  c.inv.forEach(r => {
+    let m = bySku.get(r.sku); if (!m) { m = new Map(); bySku.set(r.sku, m); }
+    let st = m.get(r.store); if (!st) { st = { store: r.store, iq: 0, ic: 0, sq: 0, sr: 0, klass: r.klass, asm: r.asm }; m.set(r.store, st); }
+    st.iq += r.qty; st.ic += r.cost;
+  });
+  c.sal.forEach(r => {
+    let m = bySku.get(r.sku); if (!m) { m = new Map(); bySku.set(r.sku, m); }
+    let st = m.get(r.store); if (!st) { st = { store: r.store, iq: 0, ic: 0, sq: 0, sr: 0, klass: r.klass, asm: r.asm }; m.set(r.store, st); }
+    st.sq += r.qty; st.sr += r.rev;
+  });
+  const plan = [];
+  bySku.forEach((stMap, sku) => {
+    const p = M.prods.get(sku);
+    const arr = Array.from(stMap.values());
+    // Cửa hàng nhận: CH đã bán được mã này nhưng hiện tồn = 0 (hoặc tồn < bán)
+    const receivers = arr.filter(x => x.sq > 0 && x.iq === 0).sort((a,b) => b.sq - a.sq || b.sr - a.sr);
+    // Cửa hàng xuất: CH đang có tồn nhưng chưa bán được (ưu tiên rút từ CH Không chạy Sale hoặc CH tồn nhiều trước)
+    const donors = arr.filter(x => x.iq > 0 && x.sq === 0).sort((a,b) => {
+      const aNon = String(a.klass).toLowerCase().indexOf('không chạy') >= 0 ? 1 : 0;
+      const bNon = String(b.klass).toLowerCase().indexOf('không chạy') >= 0 ? 1 : 0;
+      return (bNon - aNon) || (b.iq - a.iq) || (b.ic - a.ic);
+    });
+    if (receivers.length && donors.length) {
+      receivers.forEach((rcv, idx) => {
+        const dnr = donors[idx % donors.length];
+        if (!dnr) return;
+        const dnrNonSale = String(dnr.klass).toLowerCase().indexOf('không chạy') >= 0;
+        plan.push({
+          sku,
+          brand: p ? p.brand : NA_DM,
+          line: p ? p.line : NA_DM,
+          discL: p && p.disc != null ? pctLabel(p.disc) : 'N/A',
+          fromStore: storeName(dnr.store),
+          fromKlass: dnr.klass,
+          fromAsm: dnr.asm,
+          fromInv: dnr.iq,
+          fromCost: dnr.ic,
+          toStore: storeName(rcv.store),
+          toAsm: rcv.asm,
+          toSold: rcv.sq,
+          toRev: rcv.sr,
+          sugQty: 1,
+          reason: dnrNonSale ? 'Rút từ CH Không chạy Sale cấp cho CH đã bán đứt tồn' : 'Cấp bù CH bán chạy bị đứt tồn'
+        });
+      });
+    }
+  });
+  return plan.sort((a,b) => b.toSold - a.toSold || b.fromCost - a.fromCost);
+}
+
 function pageSku(){
   const M = S.M, cx = ctxX('sku'), skuSel = S.selSku;
-  let rows = skuGroups(cx);
-  if (S.skuFlag === 'stuck') rows = rows.filter(g => g.iq > 0 && g.sq === 0);
-  if (S.skuFlag === 'sold') rows = rows.filter(g => g.sq > 0);
-  const nStuck = skuGroups(cx).filter(g => g.iq > 0 && g.sq === 0).length;
-  const opts = [['all', 'Tất cả SKU'], ['stuck', 'Tồn nhưng chưa bán'], ['sold', 'Đã có bán']].map(o => '<option value="' + o[0] + '"' + (S.skuFlag === o[0] ? ' selected' : '') + '>' + o[1] + '</option>').join('');
-  const viewSel = '<select data-act="skuview"><option value="sku"' + (S.skuView === 'sku' ? ' selected' : '') + '>Theo SKU</option><option value="skuStore"' + (S.skuView === 'skuStore' ? ' selected' : '') + '>Theo SKU × Cửa hàng</option></select> <select data-act="skuflag">' + opts + '</select>';
+  const allRows = skuGroups(cx);
+  const cRebalance = allRows.filter(g => g.alertCode === 'rebalance');
+  const cNonSale   = allRows.filter(g => g.nonSaleQty > 0);
+  const cHeavy     = allRows.filter(g => g.alertCode === 'heavystuck');
+  const cFast      = allRows.filter(g => g.alertCode === 'fast');
+  const cStuck     = allRows.filter(g => g.iq > 0 && g.sq === 0);
+
+  let rows = allRows;
+  if (S.skuFlag === 'rebalance') rows = cRebalance;
+  else if (S.skuFlag === 'nonsale') rows = cNonSale;
+  else if (S.skuFlag === 'heavystuck') rows = cHeavy;
+  else if (S.skuFlag === 'fast') rows = cFast;
+  else if (S.skuFlag === 'stuck') rows = cStuck;
+  else if (S.skuFlag === 'sold') rows = allRows.filter(g => g.sq > 0);
+
+  const opts = [
+    ['all', 'Tất cả SKU (' + allRows.length + ')'],
+    ['rebalance', '🔥 Cần điều chuyển ngay: CH bán hết × CH khác còn tồn (' + cRebalance.length + ')'],
+    ['nonsale', '📦 Tồn tại CH Không chạy Sale (' + cNonSale.length + ')'],
+    ['heavystuck', '⚠ Tồn ứ đọng cao ≥3 SP / ≥15tr chưa bán (' + cHeavy.length + ')'],
+    ['fast', '🚀 Bán nhanh ST ≥50% – Sắp cạn tồn (' + cFast.length + ')'],
+    ['stuck', 'Tất cả SKU tồn – chưa bán (' + cStuck.length + ')'],
+    ['sold', 'SKU đã phát sinh bán (' + allRows.filter(g => g.sq > 0).length + ')']
+  ].map(o => '<option value="' + o[0] + '"' + (S.skuFlag === o[0] ? ' selected' : '') + '>' + o[1] + '</option>').join('');
+
+  const viewSel = '<select data-act="skuview">' +
+    '<option value="sku"' + (S.skuView === 'sku' ? ' selected' : '') + '>Theo Mã SKU</option>' +
+    '<option value="transfer"' + (S.skuView === 'transfer' ? ' selected' : '') + '>📋 Bảng Lệnh Gợi Ý Điều Chuyển (CH Xuất → CH Nhận)</option>' +
+    '<option value="skuStore"' + (S.skuView === 'skuStore' ? ' selected' : '') + '>Theo SKU × Cửa hàng</option>' +
+    '</select> <select data-act="skuflag">' + opts + '</select>';
+
+  const alertCards = '<div class="alert-grid">' +
+    '<div class="alcard bad' + (S.skuFlag === 'rebalance' ? ' on' : '') + '" data-act="quickflag" data-v="rebalance">' +
+      '<div class="at">🔥 Đứt tồn nơi bán tốt</div><div class="av">' + fmtQty(cRebalance.length) + ' <small style="font-size:12px">SKU</small></div>' +
+      '<div class="as">CH bán hết nhưng CH khác đang tồn không bán · <b>Bấm để lọc</b></div></div>' +
+    '<div class="alcard warn' + (S.skuFlag === 'nonsale' ? ' on' : '') + '" data-act="quickflag" data-v="nonsale">' +
+      '<div class="at">📦 Tồn ở CH Không chạy Sale</div><div class="av">' + fmtQty(cNonSale.reduce((a,g)=>a+g.nonSaleQty,0)) + ' <small style="font-size:12px">SP</small></div>' +
+      '<div class="as">Vốn <b>' + fmtMoney(cNonSale.reduce((a,g)=>a+g.nonSaleCost,0)) + '</b> (' + fmtQty(cNonSale.length) + ' SKU) cần kéo về CH Sale</div></div>' +
+    '<div class="alcard warn' + (S.skuFlag === 'heavystuck' ? ' on' : '') + '" data-act="quickflag" data-v="heavystuck">' +
+      '<div class="at">⚠ SKU ứ đọng vốn cao</div><div class="av">' + fmtQty(cHeavy.length) + ' <small style="font-size:12px">SKU</small></div>' +
+      '<div class="as">Tồn ≥3 SP hoặc ≥15tr nhưng bán = 0 · Vốn <b>' + fmtMoney(cHeavy.reduce((a,g)=>a+g.ic,0)) + '</b></div></div>' +
+    '<div class="alcard ok' + (S.skuFlag === 'fast' ? ' on' : '') + '" data-act="quickflag" data-v="fast">' +
+      '<div class="at">🚀 Bán nhanh sắp cạn</div><div class="av">' + fmtQty(cFast.length) + ' <small style="font-size:12px">SKU</small></div>' +
+      '<div class="as">Sell-through ≥50% · Cần gom size/mẫu về CH chủ lực</div></div>' +
+    '<div class="alcard info' + (S.skuView === 'transfer' ? ' on' : '') + '" data-act="quicktransfer">' +
+      '<div class="at">📋 Lệnh ghép cặp điều chuyển</div><div class="av">' + fmtQty(buildTransferPlan(cx).length) + ' <small style="font-size:12px">Lệnh</small></div>' +
+      '<div class="as">Tự động ghép <b>CH Xuất → CH Nhận</b> · Bấm xem & tải CSV</div></div>' +
+  '</div>';
+
   let main;
-  if (S.skuView === 'sku') {
+  if (S.skuView === 'transfer') {
+    const planRows = buildTransferPlan(cx);
+    main = tbl('sku_transfer', {
+      rows: planRows,
+      cols: [
+        { k:'sku', l:'Mã SP' },
+        { k:'brand', l:'Nhãn' },
+        { k:'line', l:'Dòng hàng' },
+        { k:'discL', l:'% giảm', r:1 },
+        { k:'fromStore', l:'CH Xuất (Đang tồn, Bán=0)' },
+        { k:'fromKlass', l:'Loại CH Xuất', fmt:v => '<span class="tag ' + (String(v).toLowerCase().indexOf('không')>=0 ? 'bad' : 'warn') + '">' + esc(v) + '</span>' },
+        { k:'fromInv', l:'Tồn CH Xuất', r:1, fmt:fmtFull },
+        { k:'toStore', l:'CH Nhận (Đã bán, Tồn=0)' },
+        { k:'toSold', l:'SL đã bán tại CH Nhận', r:1, fmt:fmtFull },
+        { k:'sugQty', l:'Gợi ý chuyển', r:1, fmt:fmtFull },
+        { k:'reason', l:'Lý do điều chuyển' }
+      ],
+      def: { k:'toSold', dir:'desc' },
+      rowAct: 'pickSku',
+      rowV: g => g.sku,
+      sel: g => g.sku === skuSel,
+      searchFn: g => g.sku + ' ' + g.brand + ' ' + g.line + ' ' + g.fromStore + ' ' + g.toStore + ' ' + g.reason,
+      file: 'Goi_Y_Dieu_Chuyen_SKU',
+      pageSize: 60,
+      maxH: 560
+    });
+  } else if (S.skuView === 'sku') {
     main = tbl('sku_main', { rows, cols: [
       { k:'key', l:'Mã SP' }, { k:'brand', l:'Nhãn' }, { k:'line', l:'Dòng hàng' }, { k:'discL', l:'% giảm', r:1, v:g => parseInt(g.discL) || 0, fmt:(v, g) => g.discL },
-      { k:'nInvSt', l:'#CH có tồn', r:1, fmt:fmtFull }, { k:'iq', l:'SL tồn', r:1, bar:1, fmt:fmtFull }, { k:'ic', l:'Vốn tồn', r:1, bar:1, fmt:fmtFull },
-      { k:'sq', l:'SL bán', r:1, fmt:fmtFull }, { k:'sr', l:'DT bán', r:1, bar:1, fmt:fmtFull }, { k:'price', l:'Giá niêm yết TB', r:1, fmt:fmtFull },
+      { k:'nInvSt', l:'#CH tồn', r:1, fmt:fmtFull }, { k:'iq', l:'SL tồn', r:1, bar:1, fmt:fmtFull }, { k:'ic', l:'Vốn tồn', r:1, bar:1, fmt:fmtFull },
+      { k:'sq', l:'SL bán', r:1, fmt:fmtFull }, { k:'sr', l:'DT bán', r:1, bar:1, fmt:fmtFull },
+      { k:'nonSaleQty', l:'Tồn CH Ko Sale', r:1, fmt:v => v > 0 ? '<b style="color:var(--red)">' + fmtFull(v) + '</b>' : '0', csv:g => g.nonSaleQty },
       { k:'st', l:'ST %', r:1, fmt:(v, g) => stTag(g), csv:g => g.st == null ? '' : (g.st * 100).toFixed(2) },
-      { k:'flag', l:'Cảnh báo', v:g => (g.iq > 0 && g.sq === 0 ? 'Tồn – chưa bán' : (g.iq === 0 && g.sq > 0 ? 'Hết tồn' : '')), fmt:v => v ? '<span class="tag ' + (v === 'Hết tồn' ? 'info' : 'warn') + '">' + v + '</span>' : '' } ],
-      def: { k:'ic', dir:'desc' }, rowAct:'pickSku', rowV:g => g.key, sel:g => g.key === skuSel, searchFn:g => g.key + ' ' + g.brand + ' ' + g.line, file:'SKU', pageSize:60, maxH:560 });
+      { k:'alertLabel', l:'Cảnh báo điều chuyển', fmt:(v, g) => v ? '<span class="tag ' + (g.alertCls || 'warn') + '">' + esc(v) + '</span>' : '' },
+      { k:'transferHint', l:'Gợi ý xử lý / Điều chuyển', title:g => g.transferHint } ],
+      def: { k:'ic', dir:'desc' }, rowAct:'pickSku', rowV:g => g.key, sel:g => g.key === skuSel, searchFn:g => g.key + ' ' + g.brand + ' ' + g.line + ' ' + g.alertLabel + ' ' + g.transferHint, file:'Danh_Sach_SKU_Canh_Bao', pageSize:60, maxH:560 });
   } else {
     const sg = aggregate(cx.inv, cx.sal, r => r.sku + '\u0001' + r.store, cx.days).filter(g => g.iq !== 0 || g.sq !== 0).map(g => {
       const [sku, st] = g.key.split('\u0001'), p = M.prods.get(sku), s = M.geo.get(st) || {};
-      return Object.assign(g, { sku, store: st, brand: p ? p.brand : NA_DM, line: p ? p.line : NA_DM, sname: s.name || '', asm: s.asm || '' });
-    }).filter(g => S.skuFlag === 'stuck' ? (g.iq > 0 && g.sq === 0) : (S.skuFlag === 'sold' ? g.sq > 0 : true));
+      const klass = s.klass || '';
+      const nonSale = String(klass).toLowerCase().indexOf('không chạy') >= 0;
+      let stFlag = '';
+      if (g.sq > 0 && g.iq === 0) stFlag = '🔥 Đứt tồn (Cần nhập điều chuyển)';
+      else if (g.iq > 0 && g.sq === 0 && nonSale) stFlag = '📦 Tồn ở CH Không Sale (Nên rút đi)';
+      else if (g.iq >= 2 && g.sq === 0) stFlag = '⚠ Tồn ≥2 SP chưa bán (Có thể rút)';
+      else if (g.iq > 0 && g.sq === 0) stFlag = 'Tồn – chưa bán';
+      return Object.assign(g, { sku, store: st, brand: p ? p.brand : NA_DM, line: p ? p.line : NA_DM, sname: s.name || '', asm: s.asm || '', klass, stFlag });
+    }).filter(g => {
+      if (S.skuFlag === 'stuck') return g.iq > 0 && g.sq === 0;
+      if (S.skuFlag === 'sold') return g.sq > 0;
+      if (S.skuFlag === 'nonsale') return g.iq > 0 && String(g.klass).toLowerCase().indexOf('không chạy') >= 0;
+      if (S.skuFlag === 'rebalance') return (g.sq > 0 && g.iq === 0) || (g.iq >= 2 && g.sq === 0);
+      if (S.skuFlag === 'heavystuck') return g.iq >= 2 && g.sq === 0;
+      return true;
+    });
     main = tbl('sku_store', { rows: sg, cols: [
       { k:'sku', l:'Mã SP' }, { k:'brand', l:'Nhãn' }, { k:'line', l:'Dòng' }, { k:'store', l:'Mã CH' }, { k:'sname', l:'Tên CH' }, { k:'asm', l:'ASM' },
-      { k:'iq', l:'SL tồn', r:1, fmt:fmtFull }, { k:'ic', l:'Vốn tồn', r:1, bar:1, fmt:fmtFull }, { k:'sq', l:'SL bán', r:1, fmt:fmtFull }, { k:'sr', l:'DT bán', r:1, bar:1, fmt:fmtFull } ],
-      def: { k:'ic', dir:'desc' }, searchFn:g => g.sku + ' ' + g.store + ' ' + g.sname + ' ' + g.brand, file:'SKU_x_CH', pageSize:80, maxH:560 });
+      { k:'klass', l:'Phân loại CH' },
+      { k:'iq', l:'SL tồn', r:1, fmt:fmtFull }, { k:'ic', l:'Vốn tồn', r:1, bar:1, fmt:fmtFull }, { k:'sq', l:'SL bán', r:1, fmt:fmtFull }, { k:'sr', l:'DT bán', r:1, bar:1, fmt:fmtFull },
+      { k:'stFlag', l:'Trạng thái điều chuyển', fmt:v => v ? '<span class="tag ' + (v.indexOf('🔥')>=0||v.indexOf('📦')>=0 ? 'bad' : 'warn') + '">' + esc(v) + '</span>' : '' } ],
+      def: { k:'ic', dir:'desc' }, rowAct:'pickSku', rowV:g => g.sku, searchFn:g => g.sku + ' ' + g.store + ' ' + g.sname + ' ' + g.brand + ' ' + g.stFlag, file:'SKU_x_CH_Dieu_Chuyen', pageSize:80, maxH:560 });
   }
   let det = '';
   if (skuSel) {
     const p = M.prods.get(skuSel), c2 = ctxX('sku');
-    const rowsD = aggregate(c2.inv.filter(r => r.sku === skuSel), c2.sal.filter(r => r.sku === skuSel), r => r.store, c2.days);
-    const td = tbl('sku_det', { rows: rowsD, cols: [{ k:'code', l:'CH', v:g => storeName(g.key) }, { k:'asm', l:'ASM', v:g => (M.geo.get(g.key) || {}).asm || '' }, { k:'iq', l:'SL tồn', r:1, fmt:fmtFull }, { k:'ic', l:'Vốn tồn', r:1, fmt:fmtFull }, { k:'sq', l:'SL bán', r:1, fmt:fmtFull }, { k:'sr', l:'DT bán', r:1, fmt:fmtFull }],
-      def: { k:'ic', dir:'desc' }, rowF:'store', rowV:g => g.key, tool:false, csv:false, maxH:300 });
-    det = '<div style="height:14px"></div>' + card('Chi tiết SKU ' + esc(skuSel), p ? esc(p.brand + ' · ' + p.line + ' · giảm ' + (p.disc != null ? pctLabel(p.disc) : 'N/A')) : 'Không có trong Dim_Product', td,
-      '<button class="btn dark" data-act="pickSku" data-v="' + esc(skuSel) + '">Bỏ chọn</button>');
+    const rowsD = aggregate(c2.inv.filter(r => r.sku === skuSel), c2.sal.filter(r => r.sku === skuSel), r => r.store, c2.days).map(g => {
+      const s = M.geo.get(g.key) || {};
+      const nonSale = String(s.klass || '').toLowerCase().indexOf('không chạy') >= 0;
+      let role = '';
+      if (g.sq > 0 && g.iq === 0) role = '🔥 CH Nhận (Đã bán ' + g.sq + ' SP, hiện hết tồn)';
+      else if (g.sq > 0 && g.iq > 0) role = '✔ CH Đang bán tốt (Giữ bán tại chỗ)';
+      else if (g.iq > 0 && nonSale) role = '📤 CH Xuất ưu tiên 1 (CH Không chạy Sale)';
+      else if (g.iq > 0 && g.sq === 0) role = '📤 CH Xuất khả dụng (Đang tồn, chưa bán)';
+      return Object.assign(g, { klass: s.klass || '', role });
+    });
+    const td = tbl('sku_det', { rows: rowsD, cols: [
+        { k:'code', l:'Cửa hàng', v:g => storeName(g.key) },
+        { k:'asm', l:'ASM', v:g => (M.geo.get(g.key) || {}).asm || '' },
+        { k:'klass', l:'Phân loại CH' },
+        { k:'iq', l:'SL tồn', r:1, fmt:fmtFull },
+        { k:'ic', l:'Vốn tồn', r:1, fmt:fmtFull },
+        { k:'sq', l:'SL bán', r:1, fmt:fmtFull },
+        { k:'sr', l:'DT bán', r:1, fmt:fmtFull },
+        { k:'role', l:'Đề xuất điều chuyển cho mã ' + skuSel, fmt:v => v ? '<span class="tag ' + (v.indexOf('🔥')>=0 ? 'bad' : v.indexOf('✔')>=0 ? 'ok' : 'warn') + '">' + esc(v) + '</span>' : '' }
+      ],
+      def: { k:'sq', dir:'desc' }, rowF:'store', rowV:g => g.key, tool:false, csv:true, file:'Chi_tiet_SKU_' + skuSel, maxH:340 });
+    det = '<div style="height:14px"></div>' + card('Chi tiết phân bổ & Điều chuyển SKU: ' + esc(skuSel), p ? esc(p.brand + ' · ' + p.line + ' · giảm ' + (p.disc != null ? pctLabel(p.disc) : 'N/A')) : 'Không có trong Dim_Product', td,
+      '<button class="btn dark" data-act="pickSku" data-v="' + esc(skuSel) + '">✕ Đóng chi tiết SKU</button>');
   }
-  const kp = '<div class="kgrid">' + kpi('SKU đang xem', fmtQty(skuGroups(cx).length), 'SKU có tồn hoặc có bán') + kpi('SKU tồn – chưa bán', fmtQty(nStuck), 'Cần đẩy bán / điều chuyển') +
-    kpi('SL tồn của nhóm này', fmtQty(skuGroups(cx).filter(g => g.iq > 0 && g.sq === 0).reduce((a, g) => a + g.iq, 0)), 'Vốn <b>' + fmtMoney(skuGroups(cx).filter(g => g.iq > 0 && g.sq === 0).reduce((a, g) => a + g.ic, 0)) + '</b>') +
-    kpi('Đang chọn', skuSel ? esc(skuSel) : '—', skuSel ? 'Bấm dòng khác để đổi' : 'Bấm 1 dòng để xem theo CH') + '</div>';
-  return kp + card('Danh sách SKU', 'Tìm theo mã SP, nhãn, dòng · bấm dòng để soi chi tiết', main, viewSel) + det;
+  return alertCards + det + (det ? '<div style="height:14px"></div>' : '') + card(' Trung tâm Cảnh báo & Điều chuyển SKU', 'Bấm vào các thẻ cảnh báo phía trên để lọc nhanh · Bấm vào 1 dòng mã SP để xem cửa hàng nào nên xuất / cửa hàng nào nên nhận', main, viewSel);
 }
 
 function pageDq(){
@@ -1142,7 +1435,9 @@ function renderPage(){
   catch (e) { el.innerHTML = '<div class="empty">Lỗi hiển thị: ' + esc(e.message) + '</div>'; console.error(e); }
   window.scrollTo(0, y);
 }
+const USER_ALLOWED_PAGES = ['overview', 'asm', 'store', 'brand'];
 function showPage(p){
+  if (S.role === 'user' && USER_ALLOWED_PAGES.indexOf(p) < 0) p = 'overview';
   S.page = p;
   document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.page === p));
   try { history.replaceState(null, '', '#' + p); } catch (e) {}
@@ -1204,7 +1499,9 @@ document.addEventListener('click', e => {
     if (act === 'clear') { S.F = {}; refresh(); return; }
     if (act === 'tmore') { TB[a.dataset.id].limit += TB[a.dataset.id].pageSize * 2; drawTable(a.dataset.id); return; }
     if (act === 'tcsv') { downloadCSV(a.dataset.id); return; }
-    if (act === 'pickSku') { const v = a.dataset.v; S.selSku = S.selSku === v ? null : v; if (S.page !== 'sku') { S.F.sku = undefined; delete S.F.sku; showPage('sku'); } else renderPage(); return; }
+    if (act === 'pickSku') { if (S.role !== 'admin') return; const v = a.dataset.v; S.selSku = S.selSku === v ? null : v; if (S.page !== 'sku') { S.F.sku = undefined; delete S.F.sku; showPage('sku'); } else renderPage(); return; }
+    if (act === 'quickflag') { const v = a.dataset.v; S.skuView = 'sku'; S.skuFlag = S.skuFlag === v ? 'all' : v; renderPage(); return; }
+    if (act === 'quicktransfer') { S.skuView = S.skuView === 'transfer' ? 'sku' : 'transfer'; renderPage(); return; }
     if (act === 'copymail') { copyMails(); return; }
   }
   const g = t.closest('[data-goto]'); if (g) { showPage(g.dataset.goto); return; }
@@ -1373,12 +1670,79 @@ async function doUpload(){
   }
 }
 
+/* ---------- Phân quyền Admin / Người dùng ---------- */
+const PASS_ADMIN = 'CVCU1234';
+const PASS_USER  = 'PCU.MTY';
+
+function applyRole(role){
+  S.role = role;
+  const isAdmin = role === 'admin';
+  $('loginGate').classList.add('hide');
+  // Ẩn/hiện các tab trên thanh điều hướng
+  document.querySelectorAll('#nav button').forEach(b => {
+    const p = b.dataset.page;
+    if (!isAdmin && USER_ALLOWED_PAGES.indexOf(p) < 0) {
+      b.style.display = 'none';
+    } else {
+      b.style.display = '';
+    }
+  });
+  // Ẩn/hiện các nút quản trị dữ liệu
+  $('btnUpload').style.display     = isAdmin ? '' : 'none';
+  $('btnExportXlsx').style.display = isAdmin ? '' : 'none';
+  $('btnReload').style.display     = isAdmin ? '' : 'none';
+  // Cập nhật huy hiệu quyền
+  const rb = $('roleBadge');
+  rb.textContent = isAdmin ? '👑 Admin' : '👤 Người dùng (MTY)';
+  rb.classList.toggle('admin', isAdmin);
+  // Nếu đang ở tab bị giới hạn thì đưa về Tổng quan
+  if (!isAdmin && USER_ALLOWED_PAGES.indexOf(S.page) < 0) {
+    S.page = 'overview';
+  }
+  document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.page === S.page));
+  if (S.M) refresh();
+}
+
+function handleLogin(){
+  const rawPass = ($('loginPass').value || '').trim();
+  if (rawPass === PASS_ADMIN) {
+    try { sessionStorage.setItem('dash_role', 'admin'); } catch (e) {}
+    $('loginErr').textContent = '';
+    $('loginPass').value = '';
+    applyRole('admin');
+    toast('Đăng nhập quyền Admin thành công');
+  } else if (rawPass.toUpperCase() === PASS_USER) {
+    try { sessionStorage.setItem('dash_role', 'user'); } catch (e) {}
+    $('loginErr').textContent = '';
+    $('loginPass').value = '';
+    applyRole('user');
+    toast('Đăng nhập giao diện Người dùng (PCU.MTY)');
+  } else {
+    $('loginErr').textContent = 'Mật khẩu không đúng. Vui lòng kiểm tra lại!';
+  }
+}
+
+$('loginForm').addEventListener('submit', e => { e.preventDefault(); handleLogin(); });
+$('btnLogout').addEventListener('click', () => {
+  try { sessionStorage.removeItem('dash_role'); } catch (e) {}
+  S.role = null;
+  $('loginPass').value = '';
+  $('loginErr').textContent = '';
+  $('loginGate').classList.remove('hide');
+  setTimeout(() => $('loginPass').focus(), 80);
+});
+
 /* ---------- Khởi động ---------- */
 (function init(){
   try { const t = parseFloat(localStorage.getItem('dash_target')); if (t > 0) S.target = t; } catch (e) {}
   const setHdr = () => document.documentElement.style.setProperty('--hdr', $('topbar').offsetHeight + 'px');
   if (window.ResizeObserver) new ResizeObserver(setHdr).observe($('topbar')); setHdr();
   const h = (location.hash || '').replace('#', ''); if (PAGES[h]) { S.page = h; document.querySelectorAll('#nav button').forEach(b => b.classList.toggle('on', b.dataset.page === h)); }
+  let savedRole = null;
+  try { savedRole = sessionStorage.getItem('dash_role'); } catch (e) {}
+  if (savedRole === 'admin' || savedRole === 'user') {
+    applyRole(savedRole);
+  }
   loadData();
 })();
 
