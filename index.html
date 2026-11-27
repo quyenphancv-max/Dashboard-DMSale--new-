@@ -20,22 +20,40 @@ h1,h2,h3{margin:0}
 button{font-family:inherit;cursor:pointer}
 .serif{font-family:'Playfair Display',Georgia,'Times New Roman',serif}
 
+/* ===== BỐ CỤC SIDEBAR TRÁI + KHUNG CHÍNH ===== */
+.shell{display:flex;min-height:100vh}
+.sidebar{width:196px;flex:none;background:linear-gradient(180deg,var(--navy) 0%,#09182E 100%);
+  border-right:2px solid rgba(212,175,55,.45);display:flex;flex-direction:column;position:sticky;top:0;height:100vh;z-index:120;transition:width .18s ease}
+body.sb-mini .sidebar{width:58px}
+.sb-top{display:flex;align-items:center;justify-content:space-between;padding:10px 10px 10px 14px;border-bottom:1px solid rgba(212,175,55,.25);min-height:54px;gap:8px}
+.sb-title{color:var(--gold2);font-size:10.5px;font-weight:700;letter-spacing:.9px;text-transform:uppercase;white-space:nowrap;overflow:hidden}
+body.sb-mini .sb-title{display:none}
+.sb-toggle{border:1px solid rgba(212,175,55,.5);background:rgba(212,175,55,.1);color:var(--gold);width:32px;height:32px;border-radius:6px;font-size:15px;display:inline-flex;align-items:center;justify-content:center;flex:none}
+.sb-toggle:hover{background:rgba(212,175,55,.25)}
+.nav{display:flex;flex-direction:column;gap:4px;padding:10px 8px;flex:1;overflow-y:auto}
+.nav button{display:flex;align-items:center;gap:10px;width:100%;text-align:left;background:none;border:0;border-left:3px solid transparent;
+  color:#C9D4E6;padding:10px 11px;border-radius:7px;font-size:12.5px;font-weight:600;letter-spacing:.2px;white-space:nowrap;transition:background .15s,color .15s}
+.nav button .ni{font-size:15px;width:20px;text-align:center;flex:none}
+.nav button .nl{overflow:hidden;text-overflow:ellipsis}
+.nav button:hover{color:#fff;background:rgba(255,255,255,.08)}
+.nav button.on{color:var(--gold);background:rgba(212,175,55,.16);border-left-color:var(--gold)}
+body.sb-mini .nav button{justify-content:center;padding:10px 0;border-left:0;border-radius:8px}
+body.sb-mini .nav button .nl{display:none}
+body.sb-mini .nav button.on{outline:1.5px solid var(--gold)}
+.sb-foot{padding:10px 10px;border-top:1px solid rgba(212,175,55,.2);font-size:10px;color:#8EA4C8;text-align:center}
+body.sb-mini .sb-foot{display:none}
+.content-col{flex:1;min-width:0;display:flex;flex-direction:column}
+
 /* ===== HEADER CỐ ĐỊNH ===== */
 .topbar{position:sticky;top:0;z-index:100;background:linear-gradient(180deg,var(--navy) 0%,#0E2747 100%);
   border-bottom:3px solid var(--gold);box-shadow:0 6px 18px rgba(11,31,58,.35)}
-.tb-row1{display:flex;align-items:center;gap:14px;padding:8px 22px;min-height:54px}
-.brand{display:flex;align-items:center;gap:12px;min-width:0}
-.brand .mark{width:34px;height:34px;flex:none}
-.brand h1{color:#fff;font-size:17px;letter-spacing:.8px;white-space:nowrap}
+.tb-row1{display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:10px 14px;padding:8px 18px;min-height:54px}
+.brand{display:flex;align-items:center;gap:10px;min-width:0}
+.brand .mark{width:32px;height:32px;flex:none}
+.brand h1{color:#fff;font-size:16px;letter-spacing:.7px;white-space:nowrap}
 .brand h1 span{color:var(--gold)}
-.brand small{display:block;color:var(--gold2);font-size:10.5px;letter-spacing:.6px;opacity:.9;white-space:nowrap}
-.nav{display:flex;gap:2px;margin-left:8px;overflow-x:auto;scrollbar-width:none;flex:1;min-width:0}
-.nav::-webkit-scrollbar{display:none}
-.nav button{background:none;border:0;color:#C9D4E6;padding:9px 13px;font-size:12px;font-weight:600;letter-spacing:.3px;
-  border-bottom:3px solid transparent;white-space:nowrap}
-.nav button:hover{color:#fff}
-.nav button.on{color:var(--gold);border-bottom-color:var(--gold)}
-.actions{display:flex;align-items:center;gap:10px;flex:none}
+.brand small{display:block;color:var(--gold2);font-size:10.5px;letter-spacing:.6px;opacity:.95;max-width:340px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.actions{display:flex;align-items:center;flex-wrap:wrap;gap:7px}
 .seg{display:inline-flex;border:1px solid rgba(212,175,55,.6);border-radius:20px;overflow:hidden}
 .seg button{background:transparent;border:0;color:var(--gold2);padding:5px 12px;font-size:11.5px;font-weight:600}
 .seg button.on{background:var(--gold);color:var(--navy)}
@@ -224,6 +242,17 @@ svg text{font-family:'Montserrat',sans-serif}
 .alcard .at{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.6px;color:var(--muted)}
 .alcard .av{font-family:'Playfair Display',serif;font-size:22px;font-weight:700;color:var(--navy);margin:2px 0}
 .alcard .as{font-size:11px;color:var(--ink)}
+
+@media(max-width:960px){.sidebar{width:58px}.sb-title,.sb-foot,.nav button .nl{display:none}.nav button{justify-content:center;padding:10px 0;border-left:0}}
+.gh-box{margin-top:14px;padding:10px 14px;background:#F5F7FC;border:1px solid #C8D6EE;border-left:4px solid var(--navy);border-radius:8px;font-size:12px}
+.gh-box label{display:flex;align-items:center;gap:8px;font-weight:700;color:var(--navy);cursor:pointer}
+.gh-box .gh-st{margin-top:4px;font-size:11px;color:var(--muted);display:flex;align-items:center;justify-content:space-between;gap:8px;flex-wrap:wrap}
+.gh-form{display:grid;gap:10px}
+.gh-form .fg{display:flex;flex-direction:column;gap:3px}
+.gh-form .fg label{font-size:11px;font-weight:700;color:var(--navy)}
+.gh-form .fg input{padding:7px 10px;border:1px solid var(--line);border-radius:6px;font:12.5px 'Montserrat',sans-serif;color:var(--ink)}
+.gh-form .fg small{font-size:10.5px;color:var(--muted)}
+.gh-row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
 </style>
 </head>
 <body>
@@ -238,49 +267,62 @@ svg text{font-family:'Montserrat',sans-serif}
     <div class="lerr" id="loginErr"></div>
   </form>
 </div>
-<div class="topbar" id="topbar">
-  <div class="tb-row1">
-    <div class="brand">
-      <svg class="mark" viewBox="0 0 40 40"><defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F3DB85"/><stop offset="1" stop-color="#B8921F"/></linearGradient></defs>
-        <path d="M20 2 L38 15 L20 38 L2 15 Z" fill="none" stroke="url(#gg)" stroke-width="2.4"/><path d="M2 15 H38 M13 15 L20 38 L27 15 L20 2 Z" fill="none" stroke="url(#gg)" stroke-width="1.6"/></svg>
-      <div><h1 class="serif">THEO DÕI <span>HÀNG SALE</span> DANH MỤC</h1><small id="progName">CHƯƠNG TRÌNH SALE</small></div>
+<div class="shell">
+  <aside class="sidebar" id="sidebar">
+    <div class="sb-top">
+      <span class="sb-title">Điều hướng</span>
+      <button class="sb-toggle" id="btnToggleSb" title="Thu gọn / Mở rộng thanh điều hướng">☰</button>
     </div>
     <nav class="nav" id="nav">
-      <button data-page="overview" class="on">Tổng quan</button>
-      <button data-page="asm">ASM</button>
-      <button data-page="store">Cửa hàng</button>
-      <button data-page="brand">Nhãn &amp; Dòng</button>
-      <button data-page="sku">SKU</button>
-      <button data-page="dq">Dữ liệu</button>
+      <button data-page="overview" class="on" title="Tổng quan"><span class="ni">📊</span><span class="nl">Tổng quan</span></button>
+      <button data-page="asm" title="ASM"><span class="ni">👥</span><span class="nl">ASM</span></button>
+      <button data-page="store" title="Cửa hàng"><span class="ni">🏪</span><span class="nl">Cửa hàng</span></button>
+      <button data-page="brand" title="Nhãn &amp; Dòng"><span class="ni">🏷</span><span class="nl">Nhãn &amp; Dòng</span></button>
+      <button data-page="sku" title="SKU &amp; Điều chuyển"><span class="ni">📦</span><span class="nl">SKU</span></button>
+      <button data-page="dq" title="Chất lượng Dữ liệu"><span class="ni">🛡</span><span class="nl">Dữ liệu</span></button>
     </nav>
-    <div class="actions">
-      <div class="updinfo" id="updinfo">Chưa có dữ liệu</div>
-      <div class="seg" id="modeSeg" title="Chế độ xem chỉ số"><button data-mode="val" class="on">Giá trị</button><button data-mode="qty">Số lượng</button></div>
-      <span class="role-badge" id="roleBadge">Khách</span>
-      <button class="btn" id="btnReload" title="Đọc lại file Template_Theo_Doi_HH_Sale_Danh_Muc.xlsx gốc">⟳ Đọc lại Template</button>
-      <button class="btn" id="btnExportXlsx" title="Xuất dữ liệu hiện tại ra file Template_Theo_Doi_HH_Sale_Danh_Muc.xlsx">⬇ Xuất Template Excel</button>
-      <button class="btn primary" id="btnUpload">⬆ Nạp dữ liệu từ máy</button>
-      <button class="btn" id="btnLogout" title="Đổi tài khoản / Đăng xuất">⎋ Đổi quyền</button>
+    <div class="sb-foot">PNJ Miền Tây · P.CƯ</div>
+  </aside>
+
+  <div class="content-col">
+    <div class="topbar" id="topbar">
+      <div class="tb-row1">
+        <div class="brand">
+          <svg class="mark" viewBox="0 0 40 40"><defs><linearGradient id="gg" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#F3DB85"/><stop offset="1" stop-color="#B8921F"/></linearGradient></defs>
+            <path d="M20 2 L38 15 L20 38 L2 15 Z" fill="none" stroke="url(#gg)" stroke-width="2.4"/><path d="M2 15 H38 M13 15 L20 38 L27 15 L20 2 Z" fill="none" stroke="url(#gg)" stroke-width="1.6"/></svg>
+          <div><h1 class="serif">THEO DÕI <span>HÀNG SALE</span> DANH MỤC</h1><small id="progName">CHƯƠNG TRÌNH SALE</small></div>
+        </div>
+        <div class="actions">
+          <div class="updinfo" id="updinfo">Chưa có dữ liệu</div>
+          <div class="seg" id="modeSeg" title="Chế độ xem chỉ số"><button data-mode="val" class="on">Giá trị</button><button data-mode="qty">Số lượng</button></div>
+          <span class="role-badge" id="roleBadge">Khách</span>
+          <button class="btn" id="btnReload" title="Đọc lại file Template_Theo_Doi_HH_Sale_Danh_Muc.xlsx gốc">⟳ Đọc lại</button>
+          <button class="btn" id="btnExportXlsx" title="Xuất dữ liệu hiện tại ra file Template Excel">⬇ Xuất Excel</button>
+          <button class="btn" id="btnGhCfg" title="Cấu hình đồng bộ tự động lên GitHub">☁ GitHub</button>
+          <button class="btn primary" id="btnUpload">⬆ Nạp dữ liệu</button>
+          <button class="btn" id="btnLogout" title="Đổi tài khoản / Đăng xuất">⎋ Đổi quyền</button>
+        </div>
+      </div>
+      <div class="tb-row2" id="filters"></div>
+      <div class="chips" id="chips"></div>
     </div>
+
+    <main>
+      <div id="hero" class="hero" style="display:none">
+        <h2>Chưa có dữ liệu trong hệ thống</h2>
+        <p>Bấm nút bên dưới và chọn file Excel/CSV từ máy (gồm Dim_Store, Dim_Product, Fact_Inventory, Fact_Sales) để bắt đầu.</p>
+        <button class="btn primary" onclick="openUpload()">⬆ Nạp dữ liệu từ máy</button>
+      </div>
+
+      <section class="page on" id="page-overview"></section>
+      <section class="page" id="page-asm"></section>
+      <section class="page" id="page-store"></section>
+      <section class="page" id="page-brand"></section>
+      <section class="page" id="page-sku"></section>
+      <section class="page" id="page-dq"></section>
+    </main>
   </div>
-  <div class="tb-row2" id="filters"></div>
-  <div class="chips" id="chips"></div>
 </div>
-
-<main>
-  <div id="hero" class="hero" style="display:none">
-    <h2>Chưa có dữ liệu trong hệ thống</h2>
-    <p>Bấm nút bên dưới và chọn file Excel/CSV từ máy (gồm Dim_Store, Dim_Product, Fact_Inventory, Fact_Sales) để bắt đầu.</p>
-    <button class="btn primary" onclick="openUpload()">⬆ Nạp dữ liệu từ máy</button>
-  </div>
-
-  <section class="page on" id="page-overview"></section>
-  <section class="page" id="page-asm"></section>
-  <section class="page" id="page-store"></section>
-  <section class="page" id="page-brand"></section>
-  <section class="page" id="page-sku"></section>
-  <section class="page" id="page-dq"></section>
-</main>
 
 <div id="overlay"><div class="spin"></div><div id="ovMsg">Đang tải dữ liệu…</div></div>
 <div id="toast"></div>
@@ -295,6 +337,10 @@ svg text{font-family:'Montserrat',sans-serif}
         <input type="file" id="fileIn" multiple accept=".xlsx,.xls,.csv,.txt" style="display:none">
       </div>
       <div id="staged"></div>
+      <div class="gh-box" id="ghSyncBox">
+        <label><input type="checkbox" id="chkPushGh"> ☁ Tự động đẩy (Update) file Template lên GitHub ngay sau khi nạp</label>
+        <div class="gh-st"><span id="ghSyncInfo">Chưa cấu hình GitHub Token</span><button type="button" class="linkbtn" style="color:var(--navy3)" onclick="openGhModal()">⚙ Cấu hình GitHub</button></div>
+      </div>
       <div class="pbar" id="pbarWrap" style="display:none"><i id="pbar"></i></div>
       <div id="upMsg" style="margin-top:8px;font-size:12px"></div>
     </div>
@@ -302,6 +348,36 @@ svg text{font-family:'Montserrat',sans-serif}
       <span style="flex:1;font-size:11px;color:var(--muted)">Dữ liệu nạp từ PC sẽ được cập nhật trực tiếp lên Dashboard và lưu vào bộ nhớ trình duyệt (có thể xuất ra lại file Template Excel chuẩn).</span>
       <button class="btn ghost" onclick="closeUpload()">Đóng</button>
       <button class="btn dark" id="btnDoUpload" disabled>Nạp vào hệ thống</button>
+    </div>
+  </div>
+</div>
+
+
+<div class="modal" id="ghModal">
+  <div class="mbox" style="width:min(560px,100%)">
+    <div class="mhd"><h2>☁ Cấu hình Đồng bộ tự động lên GitHub</h2><button onclick="closeGhModal()" aria-label="Đóng">×</button></div>
+    <div class="mbd">
+      <div class="gh-form">
+        <div class="gh-row2">
+          <div class="fg"><label>Tài khoản GitHub (Owner)</label><input id="ghOwner" placeholder="vd: quyenphancv-max"></div>
+          <div class="fg"><label>Tên Kho lưu trữ (Repo)</label><input id="ghRepo" placeholder="vd: Dashboard-DMSale--mới-"></div>
+        </div>
+        <div class="gh-row2">
+          <div class="fg"><label>Nhánh (Branch)</label><input id="ghBranch" value="main"></div>
+          <div class="fg"><label>Tên file Excel trên GitHub</label><input id="ghPath" value="Template_Theo_Doi_HH_Sale_Danh_Muc.xlsx"></div>
+        </div>
+        <div class="fg">
+          <label>GitHub Personal Access Token (PAT)</label>
+          <input type="password" id="ghToken" placeholder="github_pat_... hoặc ghp_...">
+          <small>Token chỉ lưu riêng trên trình duyệt máy Admin (localStorage), không lưu vào code web. Chỉ cần dán 1 lần duy nhất.</small>
+        </div>
+      </div>
+      <div id="ghMsg" style="margin-top:10px;font-size:12px"></div>
+    </div>
+    <div class="mft">
+      <button class="btn ghost" onclick="testGhConn()">Kiểm tra kết nối</button>
+      <button class="btn" style="color:var(--navy);border-color:var(--navy)" onclick="pushCurrentToGh()">☁ Đẩy dữ liệu hiện tại lên GitHub</button>
+      <button class="btn primary" onclick="saveGhCfg()">Lưu cấu hình</button>
     </div>
   </div>
 </div>
@@ -439,7 +515,10 @@ function canon(key, rows2D, hint){
     } else if (key === 'dimProduct') {
       const sku = cleanCode(g('sku')); if (!sku) { st.skipped++; continue; }
       let d = parseDisc(g('disc')); if (isNaN(d)) { st.badNum++; d = null; }
-      o = { sku, program: str(g('program')), brand: str(g('brand')), line: str(g('line')), disc: d };
+      // Ưu tiên cột có tiêu đề Tên Chương Trình; nếu đổi tên tiêu đề thì tự động lấy cột B (index 1)
+      let progVal = m.program >= 0 ? str(r[m.program]) : '';
+      if (!progVal && m.sku !== 1 && m.brand !== 1 && m.line !== 1 && m.disc !== 1) progVal = str(r[1]);
+      o = { sku, program: progVal, brand: str(g('brand')), line: str(g('line')), disc: d };
     } else if (key === 'inventory') {
       const sku = cleanCode(g('sku')), store = cleanCode(g('store')); if (!sku || !store) { st.skipped++; continue; }
       const price = m.price >= 0 ? num(g('price')) : 0;
@@ -502,9 +581,9 @@ function buildModel(raw){
 
   const stores = new Map();
   raw.dimStore.forEach(s => { if (!stores.has(s.code)) stores.set(s.code, Object.assign({}, s, { klassL: klassLabel(s.klass) })); });
-  const prods = new Map(); let program = '';
+  const prods = new Map(); const progSet = new Set();
   raw.dimProduct.forEach(p => {
-    if (!program && p.program) program = p.program;
+    if (p.program) progSet.add(p.program);
     if (prods.has(p.sku)) { dq.dupSku.push(p.sku); return; }
     prods.set(p.sku, Object.assign({}, p, { brand: bm.map[p.brand] || p.brand || NA_DM, line: lm.map[p.line] || p.line || NA_DM }));
   });
@@ -545,6 +624,7 @@ function buildModel(raw){
   const geo = new Map();
   stores.forEach(s => geo.set(s.code, { code: s.code, name: s.name, asm: s.asm || NA_CH, province: s.province || NA_CH, region: s.region, klass: s.klassL, cht: s.cht, mail: s.mail }));
   inv.concat(sal).forEach(r => { if (!geo.has(r.store)) geo.set(r.store, { code: r.store, name: r.storeName, asm: r.asm, province: r.province, region: r.region, klass: r.klass, cht: '', mail: '' }); });
+  const program = Array.from(progSet).slice(0, 3).join(' · ');
   return { inv, sal, stores, prods, geo, dates, dMin: dates[0] || null, dMax: dates[dates.length-1] || null, program, dq, opts,
     empty: !inv.length && !sal.length && !stores.size };
 }
@@ -1445,7 +1525,7 @@ function showPage(p){
 }
 function renderHeaderInfo(){
   const M = S.M, m = S.meta || {};
-  $('progName').textContent = (M && M.program ? M.program : 'Chương trình Sale').toUpperCase();
+  const pTxt = (M && M.program ? M.program : 'Chương trình Sale').toUpperCase(); $('progName').textContent = pTxt; $('progName').title = pTxt;
   const ts = [m.inventory, m.sales, m.dimStore, m.dimProduct].filter(Boolean).map(x => x.time).sort().pop();
   $('updinfo').innerHTML = M && !M.empty ? 'Nạp dữ liệu: <b>' + (ts ? fmtTs(ts) : '—') + '</b><br>Bán đến ngày: <b>' + (M.dMax ? fmtDMY(M.dMax) : '—') + '</b>' : 'Chưa có dữ liệu';
 }
@@ -1549,7 +1629,7 @@ function copyMails(){
 function fallbackCopy(txt, done){ const ta = document.createElement('textarea'); ta.value = txt; document.body.appendChild(ta); ta.select(); try { document.execCommand('copy'); done(); } catch (e) { toast('Không sao chép được', true); } ta.remove(); }
 
 /* ---------- Nạp dữ liệu từ máy ---------- */
-function openUpload(){ S.stg = []; renderStaged(); $('upMsg').textContent = ''; $('pbarWrap').style.display = 'none'; $('upModal').classList.add('on'); }
+function openUpload(){ S.stg = []; renderStaged(); $('upMsg').textContent = ''; $('pbarWrap').style.display = 'none'; updateGhSyncUI(); $('upModal').classList.add('on'); }
 function closeUpload(){ if (S.busy) return; $('upModal').classList.remove('on'); }
 const drop = $('drop'), fileIn = $('fileIn');
 $('btnUpload').addEventListener('click', openUpload);
@@ -1655,12 +1735,22 @@ async function doUpload(){
         newMeta[k] = { time: nowIso, by: 'Nạp từ PC', file: it.file || TEMPLATE_FILE_NAME, rows: objs.length };
       }
     });
-    $('pbar').style.width = '100%';
+    $('pbar').style.width = '60%';
     await idbSet('custom_data', { tables: newTables, meta: newMeta });
-    $('upMsg').innerHTML = '<span style="color:var(--green);font-weight:700">✔ Nạp thành công — đang làm mới dashboard…</span>';
-    toast('Đã nạp ' + items.length + ' bảng từ máy tính thành công!');
-    S.busy = false;
     await loadData(true);
+    if ($('chkPushGh') && $('chkPushGh').checked) {
+      $('upMsg').innerHTML = '<span style="color:var(--navy3);font-weight:700">☁ Đang đóng gói Excel & đẩy thẳng lên GitHub…</span>';
+      $('pbar').style.width = '82%';
+      await pushTablesToGithub(newTables);
+      $('pbar').style.width = '100%';
+      $('upMsg').innerHTML = '<span style="color:var(--green);font-weight:700">✔ Đã nạp dữ liệu & cập nhật thẳng lên GitHub thành công!</span>';
+      toast('☁ Đã đẩy file Template mới lên GitHub! Mọi người sẽ thấy sau ~30 giây.');
+    } else {
+      $('pbar').style.width = '100%';
+      $('upMsg').innerHTML = '<span style="color:var(--green);font-weight:700">✔ Nạp thành công — đang làm mới dashboard…</span>';
+      toast('Đã nạp ' + items.length + ' bảng từ máy tính thành công!');
+    }
+    S.busy = false;
     S.stg = []; renderStaged(); closeUpload();
   } catch (e) {
     $('upMsg').innerHTML = '<span style="color:var(--red);font-weight:700">✖ Lỗi khi nạp: ' + esc(e.message) + '</span>';
@@ -1669,6 +1759,146 @@ async function doUpload(){
     S.busy = false; renderStaged();
   }
 }
+
+/* ---------- Thanh điều hướng trái (Thu gọn / Mở rộng) ---------- */
+$('btnToggleSb').addEventListener('click', () => {
+  const mini = document.body.classList.toggle('sb-mini');
+  try { localStorage.setItem('dash_sb_mini', mini ? '1' : '0'); } catch (e) {}
+});
+try { if (localStorage.getItem('dash_sb_mini') === '1') document.body.classList.add('sb-mini'); } catch (e) {}
+
+/* ---------- Đồng bộ trực tiếp lên GitHub qua GitHub REST API ---------- */
+function detectGithubDefaults(){
+  let owner = '', repo = '';
+  try {
+    if (location.hostname.endsWith('.github.io')) {
+      owner = location.hostname.split('.')[0];
+      const segs = location.pathname.split('/').filter(Boolean);
+      if (segs.length) repo = decodeURIComponent(segs[0]);
+    }
+  } catch (e) {}
+  return { owner, repo, branch: 'main', path: TEMPLATE_FILE_NAME, token: '' };
+}
+function getGhCfg(){
+  const def = detectGithubDefaults();
+  try {
+    const s = JSON.parse(localStorage.getItem('dash_gh_cfg') || '{}');
+    return {
+      owner:  s.owner  || def.owner,
+      repo:   s.repo   || def.repo,
+      branch: s.branch || def.branch,
+      path:   s.path   || def.path,
+      token:  s.token  || ''
+    };
+  } catch (e) { return def; }
+}
+function updateGhSyncUI(){
+  const c = getGhCfg();
+  const has = !!(c.owner && c.repo && c.token);
+  const chk = $('chkPushGh'), inf = $('ghSyncInfo');
+  if (!chk || !inf) return;
+  chk.disabled = !has;
+  chk.checked = has;
+  inf.innerHTML = has
+    ? '<span style="color:var(--green);font-weight:600">✔ Đã kết nối: ' + esc(c.owner + '/' + c.repo) + ' (' + esc(c.branch) + ')</span>'
+    : '<span>Chưa gắn GitHub Token — bấm <b>Cấu hình GitHub</b> để bật tự động đẩy lên GitHub.</span>';
+}
+function openGhModal(){
+  const c = getGhCfg();
+  $('ghOwner').value  = c.owner;
+  $('ghRepo').value   = c.repo;
+  $('ghBranch').value = c.branch;
+  $('ghPath').value   = c.path;
+  $('ghToken').value  = c.token;
+  $('ghMsg').textContent = '';
+  $('ghModal').classList.add('on');
+}
+function closeGhModal(){ $('ghModal').classList.remove('on'); }
+function saveGhCfg(){
+  const cfg = {
+    owner:  $('ghOwner').value.trim(),
+    repo:   $('ghRepo').value.trim(),
+    branch: $('ghBranch').value.trim() || 'main',
+    path:   $('ghPath').value.trim() || TEMPLATE_FILE_NAME,
+    token:  $('ghToken').value.trim()
+  };
+  try { localStorage.setItem('dash_gh_cfg', JSON.stringify(cfg)); } catch (e) {}
+  updateGhSyncUI();
+  $('ghMsg').innerHTML = '<span style="color:var(--green);font-weight:700">✔ Đã lưu cấu hình GitHub trên máy này.</span>';
+  toast('Đã lưu cấu hình đồng bộ GitHub');
+}
+function ghApiEndpoint(c){
+  const p = c.path.split('/').map(encodeURIComponent).join('/');
+  return 'https://api.github.com/repos/' + encodeURIComponent(c.owner) + '/' + encodeURIComponent(c.repo) + '/contents/' + p;
+}
+async function testGhConn(){
+  saveGhCfg();
+  const c = getGhCfg();
+  if (!c.owner || !c.repo || !c.token) {
+    $('ghMsg').innerHTML = '<span style="color:var(--red)">✖ Vui lòng nhập đủ Owner, Repo và Token.</span>';
+    return;
+  }
+  $('ghMsg').textContent = 'Đang kiểm tra kết nối tới GitHub…';
+  try {
+    const res = await fetch('https://api.github.com/repos/' + encodeURIComponent(c.owner) + '/' + encodeURIComponent(c.repo), {
+      headers: { 'Authorization': 'Bearer ' + c.token, 'Accept': 'application/vnd.github+json' }
+    });
+    const d = await res.json();
+    if (!res.ok) throw new Error(d.message || ('HTTP ' + res.status));
+    const canPush = d.permissions && d.permissions.push;
+    $('ghMsg').innerHTML = '<span style="color:var(--green);font-weight:700">✔ Kết nối thành công kho ' + esc(d.full_name) + (canPush ? ' (Có quyền ghi)' : ' (Cảnh báo: Token có thể thiếu quyền Contents Write)') + '</span>';
+  } catch (e) {
+    $('ghMsg').innerHTML = '<span style="color:var(--red);font-weight:700">✖ Lỗi kết nối: ' + esc(e.message) + '</span>';
+  }
+}
+async function pushTablesToGithub(tablesObj){
+  const c = getGhCfg();
+  if (!c.owner || !c.repo || !c.token) throw new Error('Chưa cấu hình đầy đủ Owner / Repo / Token GitHub.');
+  if (typeof XLSX === 'undefined') throw new Error('Chưa tải được thư viện xuất Excel.');
+  const wb = XLSX.utils.book_new();
+  TABLE_ORDER.forEach(k => {
+    const def = SCHEMA_COLS[k];
+    const rows = tablesObj[k] || [def.cols];
+    const ws = XLSX.utils.aoa_to_sheet(rows);
+    XLSX.utils.book_append_sheet(wb, ws, def.tab);
+  });
+  const b64 = XLSX.write(wb, { bookType: 'xlsx', type: 'base64' });
+  const url = ghApiEndpoint(c);
+  const headers = { 'Authorization': 'Bearer ' + c.token, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' };
+  let sha = undefined;
+  const gRes = await fetch(url + '?ref=' + encodeURIComponent(c.branch) + '&_=' + Date.now(), { headers });
+  if (gRes.ok) {
+    const gd = await gRes.json();
+    sha = gd.sha;
+  } else if (gRes.status !== 404) {
+    const ge = await gRes.json().catch(() => ({}));
+    throw new Error('Không đọc được thông tin file trên GitHub: ' + (ge.message || gRes.status));
+  }
+  const now = new Date();
+  const stamp = pad2(now.getDate()) + '/' + pad2(now.getMonth()+1) + '/' + now.getFullYear() + ' ' + pad2(now.getHours()) + ':' + pad2(now.getMinutes());
+  const payload = { message: 'Cập nhật dữ liệu Sale từ Web (' + stamp + ')', content: b64, branch: c.branch };
+  if (sha) payload.sha = sha;
+  const pRes = await fetch(url, { method: 'PUT', headers, body: JSON.stringify(payload) });
+  const pd = await pRes.json().catch(() => ({}));
+  if (!pRes.ok) throw new Error('GitHub từ chối cập nhật: ' + (pd.message || ('HTTP ' + pRes.status)));
+  return pd;
+}
+async function pushCurrentToGh(){
+  saveGhCfg();
+  if (!S.raw) return toast('Chưa có dữ liệu để đẩy lên GitHub', true);
+  $('ghMsg').textContent = '☁ Đang tạo file Excel & đẩy lên GitHub…';
+  try {
+    const curTables = {};
+    TABLE_ORDER.forEach(k => { curTables[k] = [SCHEMA_COLS[k].cols].concat(toServerRows(k, S.raw[k] || [])); });
+    await pushTablesToGithub(curTables);
+    $('ghMsg').innerHTML = '<span style="color:var(--green);font-weight:700">✔ Đẩy thành công lên GitHub! Mọi người mở link web sẽ thấy dữ liệu mới sau ~30 giây.</span>';
+    toast('☁ Đã đẩy dữ liệu hiện tại lên GitHub thành công!');
+  } catch (e) {
+    $('ghMsg').innerHTML = '<span style="color:var(--red);font-weight:700">✖ Lỗi: ' + esc(e.message) + '</span>';
+    toast('Đẩy lên GitHub lỗi: ' + e.message, true);
+  }
+}
+$('btnGhCfg').addEventListener('click', openGhModal);
 
 /* ---------- Phân quyền Admin / Người dùng ---------- */
 const PASS_ADMIN = 'CVCU1234';
@@ -1691,6 +1921,7 @@ function applyRole(role){
   $('btnUpload').style.display     = isAdmin ? '' : 'none';
   $('btnExportXlsx').style.display = isAdmin ? '' : 'none';
   $('btnReload').style.display     = isAdmin ? '' : 'none';
+  $('btnGhCfg').style.display      = isAdmin ? '' : 'none';
   // Cập nhật huy hiệu quyền
   const rb = $('roleBadge');
   rb.textContent = isAdmin ? '👑 Admin' : '👤 Người dùng (MTY)';
