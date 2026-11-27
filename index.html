@@ -402,7 +402,7 @@ const TABLES = {
     qty:['soluongban','slban'], rev:['doanhthuban','doanhthu','dtban'] } }
 };
 const TABLE_ORDER = ['dimStore','dimProduct','inventory','sales'];
-const FILTER_KEYS = ['asm','province','store','klass','brand','line','disc','sku'];
+const FILTER_KEYS = ['program','asm','province','store','klass','brand','line','disc','sku'];
 
 function stripAcc(s){ return String(s == null ? '' : s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').replace(/Đ/g,'D'); }
 function nk(s){ return stripAcc(s).toLowerCase().replace(/[^a-z0-9]/g,''); }
@@ -574,7 +574,7 @@ function pctLabel(d){ return Math.round(d * 100) + '%'; }
 const NA_DM = 'Chưa có trong DM', NA_CH = 'Chưa phân loại';
 
 function buildModel(raw){
-  const dq = { missingSku: new Set(), missingStore: new Set(), dupSku: [], brandVar: [], lineVar: [], transitRows: 0, transitQty: 0,
+  const dq = { missingSku: new Set(), missingStore: new Set(), dupSku: [], multiProgSku: new Set(), brandVar: [], lineVar: [], transitRows: 0, transitQty: 0,
     noPriceRows: 0, negQty: 0, negRev: 0, soldSkuNotInInv: 0 };
   const bm = canonMap(raw.dimProduct.map(p => p.brand)), lm = canonMap(raw.dimProduct.map(p => p.line));
   dq.brandVar = bm.variants; dq.lineVar = lm.variants;
@@ -583,15 +583,36 @@ function buildModel(raw){
   raw.dimStore.forEach(s => { if (!stores.has(s.code)) stores.set(s.code, Object.assign({}, s, { klassL: klassLabel(s.klass) })); });
   const prods = new Map(); const progSet = new Set();
   raw.dimProduct.forEach(p => {
+    const prg = p.program || 'Chương trình chung';
     if (p.program) progSet.add(p.program);
-    if (prods.has(p.sku)) { dq.dupSku.push(p.sku); return; }
-    prods.set(p.sku, Object.assign({}, p, { brand: bm.map[p.brand] || p.brand || NA_DM, line: lm.map[p.line] || p.line || NA_DM }));
+    if (prods.has(p.sku)) {
+      const ex = prods.get(p.sku);
+      if (ex.programs.indexOf(prg) >= 0) {
+        dq.dupSku.push(p.sku + ' (' + prg + ')');
+      } else {
+        ex.programs.push(prg);
+        ex.program = ex.programs.join(' + ');
+        ex.progDisc[prg] = p.disc;
+        if (p.disc != null && (ex.disc == null || p.disc > ex.disc)) ex.disc = p.disc;
+        dq.multiProgSku.add(p.sku);
+      }
+      return;
+    }
+    const pd = {}; pd[prg] = p.disc;
+    prods.set(p.sku, Object.assign({}, p, {
+      program: prg,
+      programs: [prg],
+      progDisc: pd,
+      brand: bm.map[p.brand] || p.brand || NA_DM,
+      line: lm.map[p.line] || p.line || NA_DM
+    }));
   });
   const join = (sku, store) => {
     const p = prods.get(sku), s = stores.get(store);
     if (!p) dq.missingSku.add(sku);
     if (!s) dq.missingStore.add(store);
     return {
+      program: p ? p.program : NA_DM, programs: p ? p.programs : [NA_DM], progDisc: p ? p.progDisc : null,
       brand: p ? p.brand : NA_DM, line: p ? p.line : NA_DM, discV: p ? p.disc : null, disc: p && p.disc != null ? pctLabel(p.disc) : 'N/A',
       asm: s && s.asm ? s.asm : NA_CH, region: s ? s.region : '', province: s && s.province ? s.province : NA_CH,
       storeName: s ? s.name : 'CH ' + store, klass: s ? s.klassL : NA_CH
@@ -614,6 +635,7 @@ function buildModel(raw){
   const invSku = new Set(inv.map(r => r.sku));
   dq.soldSkuNotInInv = Array.from(new Set(sal.map(r => r.sku))).filter(s => !invSku.has(s)).length;
   const opts = {
+    program: uniqSorted(Array.from(progSet).concat(dq.missingSku.size ? [NA_DM] : [])),
     asm: uniqSorted(Array.from(stores.values()).map(s => s.asm).concat(inv.map(r => r.asm), sal.map(r => r.asm))),
     brand: uniqSorted(Array.from(prods.values()).map(p => p.brand).concat(inv.map(r => r.brand), sal.map(r => r.brand))),
     line: uniqSorted(Array.from(prods.values()).map(p => p.line).concat(inv.map(r => r.line), sal.map(r => r.line))),
@@ -633,10 +655,30 @@ function uniqSorted(a, cmp){ return Array.from(new Set(a.filter(x => x !== '' &&
 /* ---------- Lọc & tổng hợp ---------- */
 function dayDiff(a, b){ return Math.round((Date.UTC(+b.slice(0,4), +b.slice(5,7)-1, +b.slice(8,10)) - Date.UTC(+a.slice(0,4), +a.slice(5,7)-1, +a.slice(8,10))) / 86400000); }
 function addDays(iso, n){ const d = new Date(Date.UTC(+iso.slice(0,4), +iso.slice(5,7)-1, +iso.slice(8,10)) + n * 86400000); return d.getUTCFullYear() + '-' + pad2(d.getUTCMonth()+1) + '-' + pad2(d.getUTCDate()); }
-function matchDim(r, F){ for (let i = 0; i < FILTER_KEYS.length; i++) { const k = FILTER_KEYS[i]; if (F[k] && r[k] !== F[k]) return false; } return true; }
+function matchDim(r, F){
+  for (let i = 0; i < FILTER_KEYS.length; i++) {
+    const k = FILTER_KEYS[i];
+    if (!F[k]) continue;
+    if (k === 'program') {
+      if (!r.programs || r.programs.indexOf(F.program) < 0) return false;
+    } else if (r[k] !== F[k]) {
+      return false;
+    }
+  }
+  return true;
+}
 function filterData(M, F){
   const inv = M.inv.filter(r => matchDim(r, F));
-  const sal = M.sal.filter(r => matchDim(r, F) && (!F.dateFrom || r.date >= F.dateFrom) && (!F.dateTo || r.date <= F.dateTo));
+  let sal = M.sal.filter(r => matchDim(r, F) && (!F.dateFrom || r.date >= F.dateFrom) && (!F.dateTo || r.date <= F.dateTo));
+  // Nếu lọc theo 1 chương trình cụ thể và mã đó có % giảm riêng cho CT đó, tính lại giá niêm yết theo đúng CT đang chọn
+  if (F.program) {
+    sal = sal.map(r => {
+      const dProg = r.progDisc && r.progDisc[F.program] != null ? r.progDisc[F.program] : r.discV;
+      if (dProg === r.discV) return r;
+      const list = dProg != null && dProg < 1 ? r.rev / (1 - dProg) : r.rev;
+      return Object.assign({}, r, { discV: dProg, disc: dProg != null ? pctLabel(dProg) : 'N/A', list });
+    });
+  }
   return { inv, sal };
 }
 function daysSpan(M, F){
@@ -679,7 +721,12 @@ function geoStoreSeed(M, F){
 }
 function prodsPassing(M, F){
   let n = 0;
-  M.prods.forEach(p => { if ((!F.brand || p.brand === F.brand) && (!F.line || p.line === F.line) && (!F.disc || (p.disc != null ? pctLabel(p.disc) : 'N/A') === F.disc) && (!F.sku || p.sku === F.sku)) n++; });
+  M.prods.forEach(p => {
+    const okProg = !F.program || (p.programs && p.programs.indexOf(F.program) >= 0);
+    const dVal = (F.program && p.progDisc && p.progDisc[F.program] != null) ? p.progDisc[F.program] : p.disc;
+    const okDisc = !F.disc || (dVal != null ? pctLabel(dVal) : 'N/A') === F.disc;
+    if (okProg && (!F.brand || p.brand === F.brand) && (!F.line || p.line === F.line) && okDisc && (!F.sku || p.sku === F.sku)) n++;
+  });
   return n;
 }
 function bandOf(x){
@@ -1028,6 +1075,15 @@ function pageOverview(){
     '<div class="grid g21">' +
       card('Xu hướng bán theo ngày', unitLbl() + ' · cột = trong ngày (trục trái), đường = lũy kế (trục phải)', '<div class="svgbox">' + trendSVG(dailySeries(M, c.F, c.sal)) + '</div>') +
       card('ASM: Tồn so với Bán', 'Bấm vào ASM để lọc toàn bộ dashboard', hbars(pairRows(aG, null, g => 'ST ' + fmtPct(g.st) + ' · ' + g.nInvSt + ' CH có tồn'), { f:'asm', series:SER(), fmt:f })) + '</div>' +
+    (M.opts.program.filter(x => x !== NA_DM).length > 1 ? (function(){
+      const cPr = ctxX('program'), pMap = new Map();
+      const getP = k => { let g = pMap.get(k); if (!g) { g = newGroup(k); pMap.set(k, g); } return g; };
+      cPr.inv.forEach(r => (r.programs || [NA_DM]).forEach(pr => { const g = getP(pr); g.iq += r.qty; g.ic += r.cost; g.invSku.add(r.sku); g.invSt.add(r.store); }));
+      cPr.sal.forEach(r => (r.programs || [NA_DM]).forEach(pr => { const g = getP(pr); g.sq += r.qty; g.sr += r.rev; g.sl += r.list; g.soldSku.add(r.sku); g.soldSt.add(r.store); }));
+      const pG = Array.from(pMap.values()).map(g => finGroup(g, cPr.days));
+      const ovNote = M.dq.multiProgSku.size ? ' · Có ' + fmtQty(M.dq.multiProgSku.size) + ' SKU chạy trùng nhiều CT (tổng toàn hệ thống vẫn chỉ tính 1 lần, không bị nhân đôi).' : '';
+      return '<div class="grid">' + card('So sánh theo Chương trình Sale', 'Bấm vào tên chương trình để lọc toàn bộ dashboard' + ovNote, hbars(pairRows(pG, null, g => 'ST ' + fmtPct(g.st) + ' · ' + fmtQty(g.nInvSku) + ' SKU tồn'), { f:'program', series:SER(), fmt:f })) + '</div>';
+    })() : '') +
     '<div class="grid g2">' +
       card('Cơ cấu theo Nhãn hàng', 'Tỷ trọng Tồn so với Bán — lệch càng lớn càng cần cân đối', hbars(shareRows(bG), { f:'brand', series:MIXSER(), fmt:v => fmtPct(v) })) +
       card('Cơ cấu theo Dòng hàng', 'Tỷ trọng Tồn so với Bán', hbars(shareRows(lG), { f:'line', series:MIXSER(), fmt:v => fmtPct(v) })) + '</div>' +
@@ -1232,6 +1288,8 @@ function skuGroups(c){
     }
 
     return Object.assign(g, {
+      program: p ? p.program : NA_DM,
+      multiProg: p && p.programs && p.programs.length > 1,
       brand: p ? p.brand : NA_DM,
       line: p ? p.line : NA_DM,
       discL: p && p.disc != null ? pctLabel(p.disc) : 'N/A',
@@ -1380,7 +1438,7 @@ function pageSku(){
     });
   } else if (S.skuView === 'sku') {
     main = tbl('sku_main', { rows, cols: [
-      { k:'key', l:'Mã SP' }, { k:'brand', l:'Nhãn' }, { k:'line', l:'Dòng hàng' }, { k:'discL', l:'% giảm', r:1, v:g => parseInt(g.discL) || 0, fmt:(v, g) => g.discL },
+      { k:'key', l:'Mã SP' }, { k:'program', l:'Chương trình', fmt:(v, g) => g.multiProg ? '<span class="tag info" title="Mã chạy đồng thời nhiều chương trình">' + esc(v) + '</span>' : esc(v), title:g => g.program }, { k:'brand', l:'Nhãn' }, { k:'line', l:'Dòng hàng' }, { k:'discL', l:'% giảm', r:1, v:g => parseInt(g.discL) || 0, fmt:(v, g) => g.discL },
       { k:'nInvSt', l:'#CH tồn', r:1, fmt:fmtFull }, { k:'iq', l:'SL tồn', r:1, bar:1, fmt:fmtFull }, { k:'ic', l:'Vốn tồn', r:1, bar:1, fmt:fmtFull },
       { k:'sq', l:'SL bán', r:1, fmt:fmtFull }, { k:'sr', l:'DT bán', r:1, bar:1, fmt:fmtFull },
       { k:'nonSaleQty', l:'Tồn CH Ko Sale', r:1, fmt:v => v > 0 ? '<b style="color:var(--red)">' + fmtFull(v) + '</b>' : '0', csv:g => g.nonSaleQty },
@@ -1452,7 +1510,8 @@ function pageDq(){
   const checks = '<table class="t"><thead><tr><th>Kiểm tra</th><th class="r">Kết quả</th><th>Chi tiết</th></tr></thead><tbody>' +
     row('Mã SP trong Tồn/Bán không có trong Dim_Product', miss.length, 'bad', lst(miss, 30)) +
     row('Mã CH trong Tồn/Bán không có trong Dim_Store', missS.length, 'warn', lst(missS, 30) + (missS.length ? '<div style="font-size:11px">Đang gom vào “' + NA_CH + '”.</div>' : '')) +
-    row('Mã SP trùng trong Dim_Product', dq.dupSku.length, 'warn', lst(dq.dupSku, 20)) +
+    row('Mã SP trùng trong cùng 1 chương trình (Dim_Product)', dq.dupSku.length, 'warn', lst(dq.dupSku, 20)) +
+    row('Mã SP chạy đồng thời nhiều chương trình', dq.multiProgSku.size, 'info', lst(Array.from(dq.multiProgSku), 25) + (dq.multiProgSku.size ? '<div style="font-size:11px">Hệ thống tự giữ cả 2 chương trình để lọc, nhưng khi xem “Tất cả” chỉ tính tồn/bán 1 lần (không bị nhân đôi).</div>' : '')) +
     row('Nhãn hàng viết khác nhau (đã tự chuẩn hóa)', dq.brandVar.length, 'info', dq.brandVar.map(v => esc(v.from) + ' → ' + esc(v.to) + ' (' + v.n + ')').join('; ')) +
     row('Dòng hàng viết khác nhau (đã tự chuẩn hóa)', dq.lineVar.length, 'info', dq.lineVar.map(v => esc(v.from) + ' → ' + esc(v.to) + ' (' + v.n + ')').join('; ')) +
     row('Dòng có SL âm (tồn/bán)', dq.negQty, 'warn', '') +
@@ -1472,7 +1531,7 @@ function pageDq(){
 const PAGES = { overview: pageOverview, asm: pageAsm, store: pageStore, brand: pageBrand, sku: pageSku, dq: pageDq };
 
 /* ---------- Khung chung: bộ lọc, chip, điều hướng ---------- */
-const FLABEL = { asm:'ASM', province:'Tỉnh', store:'CH', klass:'Phân loại CH', brand:'Nhãn', line:'Dòng hàng', disc:'Mức giảm', sku:'SKU' };
+const FLABEL = { program:'Chương trình', asm:'ASM', province:'Tỉnh', store:'CH', klass:'Phân loại CH', brand:'Nhãn', line:'Dòng hàng', disc:'Mức giảm', sku:'SKU' };
 function renderFilters(){
   const M = S.M, F = S.F; if (!M) return;
   const geo = Array.from(M.geo.values());
@@ -1484,7 +1543,7 @@ function renderFilters(){
   };
   const same = a => a.map(x => [x, x]);
   $('filters').innerHTML =
-    sel('asm', 'ASM', same(M.opts.asm)) + sel('province', 'Tỉnh', same(provs)) + sel('store', 'Cửa hàng', stores.map(s => [s.code, s.code + ' · ' + s.name])) +
+    sel('program', 'Chương trình', same(M.opts.program)) + sel('asm', 'ASM', same(M.opts.asm)) + sel('province', 'Tỉnh', same(provs)) + sel('store', 'Cửa hàng', stores.map(s => [s.code, s.code + ' · ' + s.name])) +
     sel('klass', 'Phân loại CH', same(M.opts.klass)) + sel('brand', 'Nhãn hàng', same(M.opts.brand)) + sel('line', 'Dòng hàng', same(M.opts.line)) + sel('disc', 'Mức giảm', same(M.opts.disc)) +
     '<div class="fl"><label>Bán từ ngày</label><input type="date" data-fk="dateFrom" class="' + (F.dateFrom ? 'act' : '') + '" value="' + (F.dateFrom || '') + '" min="' + (M.dMin || '') + '" max="' + (M.dMax || '') + '"></div>' +
     '<div class="fl"><label>Đến ngày</label><input type="date" data-fk="dateTo" class="' + (F.dateTo ? 'act' : '') + '" value="' + (F.dateTo || '') + '" min="' + (M.dMin || '') + '" max="' + (M.dMax || '') + '"></div>' +
@@ -1504,7 +1563,7 @@ function setFilter(k, v){
   refresh();
 }
 function toggleFilter(k, v){ if (S.F[k] === v) setFilter(k, ''); else setFilter(k, v); }
-function refresh(){ S._cx = {}; renderFilters(); renderChips(); renderPage(); }
+function refresh(){ S._cx = {}; renderHeaderInfo(); renderFilters(); renderChips(); renderPage(); }
 function renderPage(){
   const empty = !S.M || S.M.empty;
   $('hero').style.display = empty ? 'block' : 'none';
@@ -1525,7 +1584,7 @@ function showPage(p){
 }
 function renderHeaderInfo(){
   const M = S.M, m = S.meta || {};
-  const pTxt = (M && M.program ? M.program : 'Chương trình Sale').toUpperCase(); $('progName').textContent = pTxt; $('progName').title = pTxt;
+  const pTxt = (S.F.program ? S.F.program : (M && M.program ? M.program : 'Chương trình Sale')).toUpperCase(); $('progName').textContent = pTxt; $('progName').title = pTxt;
   const ts = [m.inventory, m.sales, m.dimStore, m.dimProduct].filter(Boolean).map(x => x.time).sort().pop();
   $('updinfo').innerHTML = M && !M.empty ? 'Nạp dữ liệu: <b>' + (ts ? fmtTs(ts) : '—') + '</b><br>Bán đến ngày: <b>' + (M.dMax ? fmtDMY(M.dMax) : '—') + '</b>' : 'Chưa có dữ liệu';
 }
