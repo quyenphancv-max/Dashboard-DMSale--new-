@@ -449,9 +449,9 @@ const TABLES = {
     code:['macuahang','mach','storecode','mastore'], name:['tencuahang','tench','storename'], region:['khuvuc','vung'],
     asm:['asmquanlykhuvuc','asmquanly','asm'], province:['tinhthanh','tinh'], cht:['cuahangtruong','cht'],
     mail:['mailcuahangtruong','mailcht','email'], klass:['phanloaich','phanloai'] } },
-  dimProduct: { label: 'Dim_Product', req: ['sku','brand','line','disc'], f: {
+  dimProduct: { label: 'Dim_Product', req: ['sku','brand','line'], f: {
     stt:['stt'], program:['tenchuongtrinh','chuongtrinh'], brand:['nhanhang','nhan'], line:['donghang','dong'],
-    sku:['masanpham','masp','sku'], disc:['tylegiam','tylegiamgia'] } },
+    sku:['masanpham','masp','sku'], disc:['tylegiam','tylegiamgia','mucgiam','mucuudai','uudai','chinhsachgiam','hinhthucgiam','giamgia','donggia','khuyenmai'] } },
   inventory: { label: 'Fact_Inventory', req: ['sku','store','qty','cost'], f: {
     sku:['masanpham','masp','sku'], store:['macuahang','mach'], qty:['soluongtonkho','slton','soluongton'],
     cost:['vontonkho','vonton'], price:['giaban'], band:['khunggiaban'] } },
@@ -460,7 +460,7 @@ const TABLES = {
     qty:['soluongban','slban'], rev:['doanhthuban','doanhthu','dtban'] } }
 };
 const TABLE_ORDER = ['dimStore','dimProduct','inventory','sales'];
-const FILTER_KEYS = ['program','asm','province','store','klass','brand','line','disc','sku'];
+const FILTER_KEYS = ['program','asm','province','store','klass','brand','line','promoGroup','disc','sku'];
 
 function stripAcc(s){ return String(s == null ? '' : s).normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').replace(/Đ/g,'D'); }
 function nk(s){ return stripAcc(s).toLowerCase().replace(/[^a-z0-9]/g,''); }
@@ -486,12 +486,107 @@ function parseNum(v){
   const n = Number(s);
   return isFinite(n) ? (neg ? -n : n) : NaN;
 }
-function parseDisc(v){
-  let n = parseNum(v);
-  if (isNaN(n)) return NaN;
-  if (n > 1) n = n / 100;
-  return Math.round(n * 10000) / 10000;
+function fmtPromoMoney(n){
+  if (n == null || isNaN(n) || n <= 0) return '';
+  if (n >= 1e6) {
+    const v = n / 1e6;
+    const s = Math.abs(v - Math.round(v)) < 1e-6 ? String(Math.round(v)) : String(Math.round(v * 100) / 100).replace('.', ',');
+    return s + ' tr';
+  }
+  if (n >= 1e3) {
+    const v = n / 1e3;
+    const s = Math.abs(v - Math.round(v)) < 1e-6 ? String(Math.round(v)) : String(Math.round(v * 10) / 10).replace('.', ',');
+    return s + 'k';
+  }
+  return String(Math.round(n));
 }
+function parseMoneyToken(s){
+  let t = stripAcc(s).toLowerCase().replace(/vnd|vnđ|đ|d$/g, '').trim();
+  let m = t.match(/(\d+)\s*tr(?:ieu)?\s*(\d+)/);
+  if (m) return Number(m[1]) * 1e6 + Number(m[2]) * Math.pow(10, 6 - m[2].length);
+  m = t.match(/(\d+(?:[.,]\d+)?)\s*(tr(?:ieu)?|k|nghin|ngan)/);
+  if (m) {
+    const base = Number(m[1].replace(',', '.'));
+    return isFinite(base) ? Math.round(base * (m[2].startsWith('tr') ? 1e6 : 1e3)) : NaN;
+  }
+  const cleaned = t.replace(/[^0-9.,]/g, '');
+  if (!cleaned) return NaN;
+  return parseNum(cleaned);
+}
+function parsePromo(v){
+  if (v == null || str(v) === '') {
+    return { raw: '', type: 'none', group: 'Chưa rõ ưu đãi', val: null, label: 'Chưa rõ ưu đãi', sort: 900000 };
+  }
+  if (typeof v === 'number' && isFinite(v)) {
+    if (v === 0) return { raw: 0, type: 'pct', group: 'Giảm theo %', val: 0, label: 'Giảm 0%', sort: 100000 };
+    if (v > 0 && v <= 1) {
+      const p = Math.round(v * 10000) / 10000;
+      return { raw: p, type: 'pct', group: 'Giảm theo %', val: p, label: 'Giảm ' + Math.round(p * 100) + '%', sort: 100000 + Math.round(p * 1000) };
+    }
+    if (v > 1 && v < 100) {
+      const p = Math.round(v * 100) / 10000;
+      return { raw: p, type: 'pct', group: 'Giảm theo %', val: p, label: 'Giảm ' + Math.round(p * 100) + '%', sort: 100000 + Math.round(p * 1000) };
+    }
+    if (v >= 100) {
+      const amt = Math.round(v);
+      return { raw: amt, type: 'flat', group: 'Đồng giá', val: amt, label: 'Đồng giá ' + fmtPromoMoney(amt), sort: 200000 + Math.min(amt / 1000, 99999) };
+    }
+    const amt = Math.round(Math.abs(v));
+    return { raw: v, type: 'amt', group: 'Giảm tiền cố định', val: amt, label: 'Giảm ' + fmtPromoMoney(amt), sort: 300000 + Math.min(amt / 1000, 99999) };
+  }
+  const rawStr = str(v);
+  const low = stripAcc(rawStr).toLowerCase().replace(/\s+/g, ' ').trim();
+  // 1. Đồng giá
+  if (/(dong\s*gia|^dg\b|gia\s*dong\s*nhat|flat\s*price)/i.test(low)) {
+    const amt = parseMoneyToken(low);
+    if (isFinite(amt) && amt > 0) {
+      return { raw: rawStr, type: 'flat', group: 'Đồng giá', val: amt, label: 'Đồng giá ' + fmtPromoMoney(amt), sort: 200000 + Math.min(amt / 1000, 99999) };
+    }
+    return { raw: rawStr, type: 'flat', group: 'Đồng giá', val: null, label: rawStr, sort: 299999 };
+  }
+  // 2. Giảm theo %
+  const pctM = low.match(/^(?:giam|sale|off|ck|-)?\s*(\d+(?:[.,]\d+)?)\s*%$/);
+  if (pctM) {
+    const p = Math.round(Number(pctM[1].replace(',', '.')) * 100) / 10000;
+    if (isFinite(p) && p >= 0 && p < 1) {
+      return { raw: rawStr, type: 'pct', group: 'Giảm theo %', val: p, label: 'Giảm ' + Math.round(p * 100) + '%', sort: 100000 + Math.round(p * 1000) };
+    }
+  }
+  // 3. Giảm tiền cố định (vd: Giảm 500k, Giảm 2tr, -500.000, Trừ 1tr5)
+  if (/^(?:giam|tru|off|-)/.test(low) && !/%/.test(low) && !/(den|tu|toi|tang|mua)/.test(low)) {
+    const amt = parseMoneyToken(low);
+    if (isFinite(amt) && amt >= 1000) {
+      return { raw: rawStr, type: 'amt', group: 'Giảm tiền cố định', val: amt, label: 'Giảm ' + fmtPromoMoney(amt), sort: 300000 + Math.min(amt / 1000, 99999) };
+    }
+  }
+  // 4. Chuỗi số thuần (vd: "0.3", "30", "999000", "500k")
+  if (/^-?[\d.,\s]+(k|tr|trieu|nghin|ngan|d|vnd)?$/i.test(low)) {
+    const isNeg = low.startsWith('-');
+    const hasUnit = /(k|tr|trieu|nghin|ngan|d|vnd)$/i.test(low);
+    const numVal = hasUnit ? parseMoneyToken(low) : parseNum(low);
+    if (isFinite(numVal)) {
+      if (!hasUnit && !isNeg && numVal >= 0 && numVal <= 1) {
+        const p = Math.round(numVal * 10000) / 10000;
+        return { raw: rawStr, type: 'pct', group: 'Giảm theo %', val: p, label: 'Giảm ' + Math.round(p * 100) + '%', sort: 100000 + Math.round(p * 1000) };
+      }
+      if (!hasUnit && !isNeg && numVal > 1 && numVal < 100) {
+        const p = Math.round(numVal * 100) / 10000;
+        return { raw: rawStr, type: 'pct', group: 'Giảm theo %', val: p, label: 'Giảm ' + Math.round(p * 100) + '%', sort: 100000 + Math.round(p * 1000) };
+      }
+      if (isNeg && Math.abs(numVal) >= 1000) {
+        const amt = Math.round(Math.abs(numVal));
+        return { raw: rawStr, type: 'amt', group: 'Giảm tiền cố định', val: amt, label: 'Giảm ' + fmtPromoMoney(amt), sort: 300000 + Math.min(amt / 1000, 99999) };
+      }
+      if (numVal >= 1000) {
+        const amt = Math.round(numVal);
+        return { raw: rawStr, type: 'flat', group: 'Đồng giá', val: amt, label: 'Đồng giá ' + fmtPromoMoney(amt), sort: 200000 + Math.min(amt / 1000, 99999) };
+      }
+    }
+  }
+  // 5. Các mức ưu đãi dạng chữ khác (Mua 1 tặng 1, Giảm đến 30%, Tặng voucher...)
+  return { raw: rawStr, type: 'other', group: 'Ưu đãi khác', val: null, label: rawStr, sort: 400000 };
+}
+function parseDisc(v){ const p = parsePromo(v); return p.type === 'pct' ? p.val : null; }
 function pad2(n){ return (n < 10 ? '0' : '') + n; }
 function validYMD(y,m,d){ if (m<1||m>12||d<1||d>31) return false; const dt = new Date(Date.UTC(y,m-1,d)); return dt.getUTCFullYear()===y && dt.getUTCMonth()===m-1 && dt.getUTCDate()===d; }
 /** Trả {iso, amb} hoặc null. hint = {m,y} lấy từ tên chương trình để giải quyết ngày dạng 11/5/2026 */
@@ -572,11 +667,13 @@ function canon(key, rows2D, hint){
       o = { code, name: str(g('name')), region: str(g('region')), asm: str(g('asm')), province: str(g('province')), cht: str(g('cht')), mail: str(g('mail')), klass: g('klass') == null ? '' : g('klass') };
     } else if (key === 'dimProduct') {
       const sku = cleanCode(g('sku')); if (!sku) { st.skipped++; continue; }
-      let d = parseDisc(g('disc')); if (isNaN(d)) { st.badNum++; d = null; }
       // Ưu tiên cột có tiêu đề Tên Chương Trình; nếu đổi tên tiêu đề thì tự động lấy cột B (index 1)
       let progVal = m.program >= 0 ? str(r[m.program]) : '';
       if (!progVal && m.sku !== 1 && m.brand !== 1 && m.line !== 1 && m.disc !== 1) progVal = str(r[1]);
-      o = { sku, program: progVal, brand: str(g('brand')), line: str(g('line')), disc: d };
+      // Ưu tiên cột có tiêu đề Tỷ lệ giảm / Mức ưu đãi; nếu đổi tên tiêu đề thì tự động lấy cột F (index 5)
+      let rawDisc = m.disc >= 0 ? r[m.disc] : (m.sku !== 5 && m.brand !== 5 && m.line !== 5 && m.program !== 5 ? r[5] : '');
+      const promo = parsePromo(rawDisc);
+      o = { sku, program: progVal, brand: str(g('brand')), line: str(g('line')), disc: promo.type === 'pct' ? promo.val : null, discRaw: promo.raw, promo };
     } else if (key === 'inventory') {
       const sku = cleanCode(g('sku')), store = cleanCode(g('store')); if (!sku || !store) { st.skipped++; continue; }
       const price = m.price >= 0 ? num(g('price')) : 0;
@@ -595,7 +692,7 @@ function canon(key, rows2D, hint){
 function toServerRows(key, objs){
   const code = c => (/^\d{1,15}$/.test(c) ? Number(c) : c);
   if (key === 'dimStore') return objs.map(o => [code(o.code), o.name, o.region, o.asm, o.province, o.cht, o.mail, o.klass]);
-  if (key === 'dimProduct') return objs.map((o,i) => [i+1, o.program, o.brand, o.line, o.sku, o.disc == null ? '' : o.disc]);
+  if (key === 'dimProduct') return objs.map((o,i) => [i+1, o.program, o.brand, o.line, o.sku, o.discRaw != null && o.discRaw !== '' ? o.discRaw : (o.disc == null ? '' : o.disc)]);
   if (key === 'inventory') return objs.map(o => [o.sku, code(o.store), o.qty, o.cost, o.price == null ? '' : o.price, o.bandTxt || '']);
   return objs.map(o => [o.date, o.sku, code(o.store), o.qty, o.rev]);
 }
@@ -639,9 +736,18 @@ function buildModel(raw){
 
   const stores = new Map();
   raw.dimStore.forEach(s => { if (!stores.has(s.code)) stores.set(s.code, Object.assign({}, s, { klassL: klassLabel(s.klass) })); });
-  const prods = new Map(); const progSet = new Set();
+  const invUnitPrice = new Map();
+  raw.inventory.forEach(o => {
+    if (o.price != null && o.price > 0 && o.qty > 0 && !invUnitPrice.has(o.sku)) {
+      invUnitPrice.set(o.sku, o.price / o.qty);
+    }
+  });
+  const prods = new Map(); const progSet = new Set(); const promoSortMap = new Map();
+  const regPromo = pr => { if (pr && pr.label && !promoSortMap.has(pr.label)) promoSortMap.set(pr.label, pr.sort); };
   raw.dimProduct.forEach(p => {
     const prg = p.program || 'Chương trình chung';
+    const pr = p.promo || parsePromo(p.discRaw != null ? p.discRaw : p.disc);
+    regPromo(pr);
     if (p.program) progSet.add(p.program);
     if (prods.has(p.sku)) {
       const ex = prods.get(p.sku);
@@ -650,28 +756,60 @@ function buildModel(raw){
       } else {
         ex.programs.push(prg);
         ex.program = ex.programs.join(' + ');
-        ex.progDisc[prg] = p.disc;
-        if (p.disc != null && (ex.disc == null || p.disc > ex.disc)) ex.disc = p.disc;
+        ex.progDisc[prg] = pr.type === 'pct' ? pr.val : null;
+        ex.progPromo[prg] = pr;
+        if (ex.promoLabels.indexOf(pr.label) < 0) ex.promoLabels.push(pr.label);
+        if (ex.promoGroups.indexOf(pr.group) < 0) ex.promoGroups.push(pr.group);
+        if (pr.type === 'pct' && (ex.disc == null || pr.val > ex.disc)) {
+          ex.disc = pr.val;
+          if (ex.promo.type !== 'pct' || pr.val > (ex.promo.val || 0)) ex.promo = pr;
+        }
         dq.multiProgSku.add(p.sku);
       }
       return;
     }
-    const pd = {}; pd[prg] = p.disc;
+    const pd = {}; pd[prg] = pr.type === 'pct' ? pr.val : null;
+    const pp = {}; pp[prg] = pr;
     prods.set(p.sku, Object.assign({}, p, {
       program: prg,
       programs: [prg],
       progDisc: pd,
+      progPromo: pp,
+      promo: pr,
+      promoLabels: [pr.label],
+      promoGroups: [pr.group],
       brand: bm.map[p.brand] || p.brand || NA_DM,
       line: lm.map[p.line] || p.line || NA_DM
     }));
   });
+  const NA_PROMO = { raw: '', type: 'none', group: 'Chưa rõ ưu đãi', val: null, label: 'Chưa rõ ưu đãi', sort: 900000 };
+  regPromo(NA_PROMO);
+  const calcList = (rev, qty, pr, sku) => {
+    if (pr && pr.type === 'pct' && pr.val != null && pr.val < 1) {
+      return { list: rev / (1 - pr.val), hasList: true };
+    }
+    if (pr && pr.type === 'amt' && pr.val != null && pr.val > 0) {
+      return { list: rev + pr.val * Math.abs(qty || 0), hasList: true };
+    }
+    const up = invUnitPrice.get(sku);
+    if (up && up > 0 && qty > 0) {
+      return { list: Math.max(rev, up * qty), hasList: true };
+    }
+    return { list: rev, hasList: false };
+  };
   const join = (sku, store) => {
     const p = prods.get(sku), s = stores.get(store);
     if (!p) dq.missingSku.add(sku);
     if (!s) dq.missingStore.add(store);
+    const pr = p ? p.promo : NA_PROMO;
     return {
-      program: p ? p.program : NA_DM, programs: p ? p.programs : [NA_DM], progDisc: p ? p.progDisc : null,
-      brand: p ? p.brand : NA_DM, line: p ? p.line : NA_DM, discV: p ? p.disc : null, disc: p && p.disc != null ? pctLabel(p.disc) : 'N/A',
+      program: p ? p.program : NA_DM, programs: p ? p.programs : [NA_DM],
+      progDisc: p ? p.progDisc : null, progPromo: p ? p.progPromo : null,
+      promo: pr, promoType: pr.type, promoGroup: pr.group,
+      promoGroups: p ? p.promoGroups : [NA_PROMO.group],
+      promoLabels: p ? p.promoLabels : [NA_PROMO.label],
+      brand: p ? p.brand : NA_DM, line: p ? p.line : NA_DM,
+      discV: pr.type === 'pct' ? pr.val : null, disc: pr.label,
       asm: s && s.asm ? s.asm : NA_CH, region: s ? s.region : '', province: s && s.province ? s.province : NA_CH,
       storeName: s ? s.name : 'CH ' + store, klass: s ? s.klassL : NA_CH
     };
@@ -685,27 +823,37 @@ function buildModel(raw){
   });
   const sal = raw.sales.map(o => {
     const j = join(o.sku, o.store);
-    const list = j.discV != null && j.discV < 1 ? o.rev / (1 - j.discV) : o.rev;
+    const cl = calcList(o.rev, o.qty, j.promo, o.sku);
     if (o.qty < 0) dq.negQty++;
-    return Object.assign({ date: o.date, sku: o.sku, store: o.store, qty: o.qty, rev: o.rev, list }, j);
+    return Object.assign({ date: o.date, sku: o.sku, store: o.store, qty: o.qty, rev: o.rev, list: cl.list, hasList: cl.hasList }, j);
   });
   const dates = Array.from(new Set(sal.map(r => r.date))).sort();
   const invSku = new Set(inv.map(r => r.sku));
   dq.soldSkuNotInInv = Array.from(new Set(sal.map(r => r.sku))).filter(s => !invSku.has(s)).length;
+  const PG_ORDER = ['Giảm theo %', 'Đồng giá', 'Giảm tiền cố định', 'Ưu đãi khác', 'Chưa rõ ưu đãi'];
+  const allDiscLabels = [];
+  prods.forEach(p => p.promoLabels.forEach(l => allDiscLabels.push(l)));
+  inv.forEach(r => allDiscLabels.push(r.disc));
+  sal.forEach(r => allDiscLabels.push(r.disc));
+  const allPromoGroups = [];
+  prods.forEach(p => p.promoGroups.forEach(g => allPromoGroups.push(g)));
+  inv.forEach(r => allPromoGroups.push(r.promoGroup));
+  sal.forEach(r => allPromoGroups.push(r.promoGroup));
   const opts = {
     program: uniqSorted(Array.from(progSet).concat(dq.missingSku.size ? [NA_DM] : [])),
     asm: uniqSorted(Array.from(stores.values()).map(s => s.asm).concat(inv.map(r => r.asm), sal.map(r => r.asm))),
     brand: uniqSorted(Array.from(prods.values()).map(p => p.brand).concat(inv.map(r => r.brand), sal.map(r => r.brand))),
     line: uniqSorted(Array.from(prods.values()).map(p => p.line).concat(inv.map(r => r.line), sal.map(r => r.line))),
     klass: uniqSorted(Array.from(stores.values()).map(s => s.klassL).concat(inv.map(r => r.klass), sal.map(r => r.klass))),
-    disc: uniqSorted(Array.from(prods.values()).map(p => p.disc != null ? pctLabel(p.disc) : 'N/A').concat(inv.map(r => r.disc), sal.map(r => r.disc)), (a,b) => (parseInt(a)||999) - (parseInt(b)||999))
+    promoGroup: uniqSorted(allPromoGroups, (a,b) => (PG_ORDER.indexOf(a) < 0 ? 99 : PG_ORDER.indexOf(a)) - (PG_ORDER.indexOf(b) < 0 ? 99 : PG_ORDER.indexOf(b))),
+    disc: uniqSorted(allDiscLabels, (a,b) => (promoSortMap.get(a) || 999999) - (promoSortMap.get(b) || 999999) || String(a).localeCompare(String(b), 'vi'))
   };
   // địa bàn: tập (asm, province, store) kể cả CH không có phát sinh
   const geo = new Map();
   stores.forEach(s => geo.set(s.code, { code: s.code, name: s.name, asm: s.asm || NA_CH, province: s.province || NA_CH, region: s.region, klass: s.klassL, cht: s.cht, mail: s.mail }));
   inv.concat(sal).forEach(r => { if (!geo.has(r.store)) geo.set(r.store, { code: r.store, name: r.storeName, asm: r.asm, province: r.province, region: r.region, klass: r.klass, cht: '', mail: '' }); });
   const program = Array.from(progSet).slice(0, 3).join(' · ');
-  return { inv, sal, stores, prods, geo, dates, dMin: dates[0] || null, dMax: dates[dates.length-1] || null, program, dq, opts,
+  return { inv, sal, stores, prods, geo, invUnitPrice, promoSortMap, dates, dMin: dates[0] || null, dMax: dates[dates.length-1] || null, program, dq, opts,
     empty: !inv.length && !sal.length && !stores.size };
 }
 function uniqSorted(a, cmp){ return Array.from(new Set(a.filter(x => x !== '' && x != null))).sort(cmp || ((x,y) => String(x).localeCompare(String(y),'vi'))); }
@@ -713,12 +861,40 @@ function uniqSorted(a, cmp){ return Array.from(new Set(a.filter(x => x !== '' &&
 /* ---------- Lọc & tổng hợp ---------- */
 function dayDiff(a, b){ return Math.round((Date.UTC(+b.slice(0,4), +b.slice(5,7)-1, +b.slice(8,10)) - Date.UTC(+a.slice(0,4), +a.slice(5,7)-1, +a.slice(8,10))) / 86400000); }
 function addDays(iso, n){ const d = new Date(Date.UTC(+iso.slice(0,4), +iso.slice(5,7)-1, +iso.slice(8,10)) + n * 86400000); return d.getUTCFullYear() + '-' + pad2(d.getUTCMonth()+1) + '-' + pad2(d.getUTCDate()); }
+function resolveRowPromo(r, prog, invUnitPrice){
+  if (!prog || !r.progPromo || !r.progPromo[prog]) return r;
+  const pr = r.progPromo[prog];
+  if (pr === r.promo) return r;
+  const base = Object.assign({}, r, {
+    promo: pr, promoType: pr.type, promoGroup: pr.group,
+    promoGroups: [pr.group], promoLabels: [pr.label],
+    discV: pr.type === 'pct' ? pr.val : null, disc: pr.label
+  });
+  if (r.rev != null) {
+    if (pr.type === 'pct' && pr.val != null && pr.val < 1) {
+      base.list = r.rev / (1 - pr.val); base.hasList = true;
+    } else if (pr.type === 'amt' && pr.val != null && pr.val > 0) {
+      base.list = r.rev + pr.val * Math.abs(r.qty || 0); base.hasList = true;
+    } else {
+      const up = invUnitPrice && invUnitPrice.get(r.sku);
+      if (up && up > 0 && r.qty > 0) { base.list = Math.max(r.rev, up * r.qty); base.hasList = true; }
+      else { base.list = r.rev; base.hasList = false; }
+    }
+  }
+  return base;
+}
 function matchDim(r, F){
   for (let i = 0; i < FILTER_KEYS.length; i++) {
     const k = FILTER_KEYS[i];
     if (!F[k]) continue;
     if (k === 'program') {
       if (!r.programs || r.programs.indexOf(F.program) < 0) return false;
+    } else if (k === 'disc') {
+      if (F.program) { if (r.disc !== F.disc) return false; }
+      else if (!r.promoLabels || r.promoLabels.indexOf(F.disc) < 0) return false;
+    } else if (k === 'promoGroup') {
+      if (F.program) { if (r.promoGroup !== F.promoGroup) return false; }
+      else if (!r.promoGroups || r.promoGroups.indexOf(F.promoGroup) < 0) return false;
     } else if (r[k] !== F[k]) {
       return false;
     }
@@ -726,17 +902,10 @@ function matchDim(r, F){
   return true;
 }
 function filterData(M, F){
-  const inv = M.inv.filter(r => matchDim(r, F));
-  let sal = M.sal.filter(r => matchDim(r, F) && (!F.dateFrom || r.date >= F.dateFrom) && (!F.dateTo || r.date <= F.dateTo));
-  // Nếu lọc theo 1 chương trình cụ thể và mã đó có % giảm riêng cho CT đó, tính lại giá niêm yết theo đúng CT đang chọn
-  if (F.program) {
-    sal = sal.map(r => {
-      const dProg = r.progDisc && r.progDisc[F.program] != null ? r.progDisc[F.program] : r.discV;
-      if (dProg === r.discV) return r;
-      const list = dProg != null && dProg < 1 ? r.rev / (1 - dProg) : r.rev;
-      return Object.assign({}, r, { discV: dProg, disc: dProg != null ? pctLabel(dProg) : 'N/A', list });
-    });
-  }
+  const invSrc = F.program ? M.inv.filter(r => r.programs && r.programs.indexOf(F.program) >= 0).map(r => resolveRowPromo(r, F.program, M.invUnitPrice)) : M.inv;
+  const inv = invSrc.filter(r => matchDim(r, F));
+  const salSrc = F.program ? M.sal.filter(r => r.programs && r.programs.indexOf(F.program) >= 0).map(r => resolveRowPromo(r, F.program, M.invUnitPrice)) : M.sal;
+  const sal = salSrc.filter(r => matchDim(r, F) && (!F.dateFrom || r.date >= F.dateFrom) && (!F.dateTo || r.date <= F.dateTo));
   return { inv, sal };
 }
 function daysSpan(M, F){
@@ -744,13 +913,15 @@ function daysSpan(M, F){
   const from = F.dateFrom && F.dateFrom > M.dMin ? F.dateFrom : M.dMin, to = F.dateTo && F.dateTo < M.dMax ? F.dateTo : M.dMax;
   return Math.max(1, dayDiff(from, to) + 1);
 }
-function newGroup(key){ return { key, iq: 0, ic: 0, sq: 0, sr: 0, sl: 0, invSku: new Set(), soldSku: new Set(), invSt: new Set(), soldSt: new Set() }; }
+function newGroup(key){ return { key, iq: 0, ic: 0, sq: 0, sr: 0, sl: 0, slK: 0, srK: 0, invSku: new Set(), soldSku: new Set(), invSt: new Set(), soldSt: new Set() }; }
 function finGroup(g, days){
   g.nInvSku = g.invSku.size; g.nSoldSku = g.soldSku.size; g.nInvSt = g.invSt.size; g.nSoldSt = g.soldSt.size;
   delete g.invSku; delete g.soldSku; delete g.invSt; delete g.soldSt;
   g.st = (g.sq + g.iq) > 0 ? g.sq / (g.sq + g.iq) : null;
   g.cover = g.sq > 0 ? g.iq / (g.sq / days) : (g.iq > 0 ? Infinity : null);
-  g.avgDisc = g.sl > 0 ? (g.sl - g.sr) / g.sl : null;
+  g.avgDisc = g.slK > 0 ? (g.slK - g.srK) / g.slK : null;
+  g.discAmt = g.slK - g.srK;
+  g.discCov = g.sr > 0 ? g.srK / g.sr : null;
   g.price = g.sq > 0 ? g.sl / g.sq : null;
   g.perDay = g.sr / days; g.qPerDay = g.sq / days;
   return g;
@@ -760,7 +931,7 @@ function aggregate(inv, sal, keyFn, days, seed){
   if (seed) seed.forEach(k => map.set(k, newGroup(k)));
   const get = k => { let g = map.get(k); if (!g) { g = newGroup(k); map.set(k, g); } return g; };
   inv.forEach(r => { const g = get(keyFn(r)); g.iq += r.qty; g.ic += r.cost; g.invSku.add(r.sku); g.invSt.add(r.store); });
-  sal.forEach(r => { const g = get(keyFn(r)); g.sq += r.qty; g.sr += r.rev; g.sl += r.list; g.soldSku.add(r.sku); g.soldSt.add(r.store); });
+  sal.forEach(r => { const g = get(keyFn(r)); g.sq += r.qty; g.sr += r.rev; g.sl += r.list; if (r.hasList !== false) { g.slK += r.list; g.srK += r.rev; } g.soldSku.add(r.sku); g.soldSt.add(r.store); });
   return Array.from(map.values()).map(g => finGroup(g, days));
 }
 function totalOf(inv, sal, days){ return aggregate(inv, sal, () => 'ALL', days, ['ALL'])[0]; }
@@ -781,9 +952,10 @@ function prodsPassing(M, F){
   let n = 0;
   M.prods.forEach(p => {
     const okProg = !F.program || (p.programs && p.programs.indexOf(F.program) >= 0);
-    const dVal = (F.program && p.progDisc && p.progDisc[F.program] != null) ? p.progDisc[F.program] : p.disc;
-    const okDisc = !F.disc || (dVal != null ? pctLabel(dVal) : 'N/A') === F.disc;
-    if (okProg && (!F.brand || p.brand === F.brand) && (!F.line || p.line === F.line) && okDisc && (!F.sku || p.sku === F.sku)) n++;
+    const pr = (F.program && p.progPromo && p.progPromo[F.program]) ? p.progPromo[F.program] : p.promo;
+    const okPg = !F.promoGroup || (F.program ? pr.group === F.promoGroup : (p.promoGroups && p.promoGroups.indexOf(F.promoGroup) >= 0));
+    const okDisc = !F.disc || (F.program ? pr.label === F.disc : (p.promoLabels && p.promoLabels.indexOf(F.disc) >= 0));
+    if (okProg && okPg && (!F.brand || p.brand === F.brand) && (!F.line || p.line === F.line) && okDisc && (!F.sku || p.sku === F.sku)) n++;
   });
   return n;
 }
@@ -1115,7 +1287,7 @@ function pageOverview(){
     kpi('SL bán', fmtQty(t.sq), '<b>' + fmtQty(t.nSoldSku) + '</b> SKU · <b>' + fmtQty(t.nSoldSt) + '</b> CH có bán') +
     kpi('Sell-through (SL)', fmtPct(t.st), 'Mục tiêu <b>' + S.target + '%</b> · ' + (t.st != null && t.st * 100 >= S.target ? 'Đạt' : 'Chưa đạt')) +
     kpi('Days of cover', fmtCover(t.cover), 'Bán TB <b>' + dec(t.qPerDay, 1) + '</b> SP/ngày · ' + c.days + ' ngày') +
-    kpi('% giảm giá bình quân', fmtPct(t.avgDisc), 'Giá trị giảm <b>' + fmtMoney(t.sl - t.sr) + '</b>') +
+    kpi('% giảm giá bình quân', fmtPct(t.avgDisc), 'Giá trị giảm <b>' + fmtMoney(t.discAmt) + '</b>' + (t.discCov != null && t.discCov < 0.995 ? ' · Tính trên <b>' + fmtPct(t.discCov, 0) + '</b> DT' : '')) +
     kpi('Độ phủ SKU danh mục', den ? fmtPct(t.nInvSku / den) : '—', '<b>' + fmtQty(t.nInvSku) + '</b>/' + fmtQty(den) + ' SKU có tồn · <b>' + fmtQty(t.nSoldSku) + '</b> đã bán') + '</div>';
   const f = MF();
   const cA = ctxX('asm'), aG = aggregate(cA.inv, cA.sal, r => r.asm, cA.days, M.opts.asm);
@@ -1141,6 +1313,10 @@ function pageOverview(){
       const pG = Array.from(pMap.values()).map(g => finGroup(g, cPr.days));
       const ovNote = M.dq.multiProgSku.size ? ' · Có ' + fmtQty(M.dq.multiProgSku.size) + ' SKU chạy trùng nhiều CT (tổng toàn hệ thống vẫn chỉ tính 1 lần, không bị nhân đôi).' : '';
       return '<div class="grid">' + card('So sánh theo Chương trình Sale', 'Bấm vào tên chương trình để lọc toàn bộ dashboard' + ovNote, hbars(pairRows(pG, null, g => 'ST ' + fmtPct(g.st) + ' · ' + fmtQty(g.nInvSku) + ' SKU tồn'), { f:'program', series:SER(), fmt:f })) + '</div>';
+    })() : '') +
+    (M.opts.promoGroup.length > 1 ? (function(){
+      const cPg = ctxX('promoGroup'), pgG = aggregate(cPg.inv, cPg.sal, r => r.promoGroup, cPg.days);
+      return '<div class="grid">' + card('Đánh giá hiệu quả theo Loại ưu đãi (Cột F)', 'So sánh Giảm %, Đồng giá, Giảm tiền cố định & Ưu đãi khác · Bấm để lọc', hbars(pairRows(pgG, null, g => 'ST ' + fmtPct(g.st) + ' · Cover ' + fmtCover(g.cover) + ' · ' + fmtQty(g.nInvSku) + ' SKU tồn'), { f:'promoGroup', series:SER(), fmt:f })) + '</div>';
     })() : '') +
     '<div class="grid g2">' +
       card('Cơ cấu theo Nhãn hàng', 'Tỷ trọng Tồn so với Bán — lệch càng lớn càng cần cân đối', hbars(shareRows(bG), { f:'brand', series:MIXSER(), fmt:v => fmtPct(v) })) +
@@ -1236,6 +1412,65 @@ function pageBrand(){
   };
   const cD = ctxX('disc'), dG = aggregate(cD.inv, cD.sal, r => r.disc, cD.days), dOrd = M.opts.disc;
   dG.sort((a, b) => dOrd.indexOf(a.key) - dOrd.indexOf(b.key));
+  // Bảng đánh giá chi tiết từng Chương trình × Mức ưu đãi (hỗ trợ đa chương trình & đa hình thức giảm giá)
+  const evalMap = new Map();
+  const multiProgMode = !S.F.program && M.opts.program.filter(x => x !== NA_DM).length > 1;
+  const getEv = (prog, pr) => {
+    const k = (multiProgMode ? prog + '\u0001' : '') + pr.label;
+    let g = evalMap.get(k);
+    if (!g) { g = Object.assign(newGroup(k), { prog: multiProgMode ? prog : (S.F.program || M.program || 'Tất cả'), promoGroup: pr.group, promoType: pr.type, disc: pr.label, sort: pr.sort }); evalMap.set(k, g); }
+    return g;
+  };
+  cD.inv.forEach(r => {
+    if (multiProgMode && r.programs && r.programs.length) {
+      r.programs.forEach(prName => {
+        const pr = (r.progPromo && r.progPromo[prName]) || r.promo;
+        const g = getEv(prName, pr); g.iq += r.qty; g.ic += r.cost; g.invSku.add(r.sku); g.invSt.add(r.store);
+      });
+    } else {
+      const g = getEv(r.program, r.promo); g.iq += r.qty; g.ic += r.cost; g.invSku.add(r.sku); g.invSt.add(r.store);
+    }
+  });
+  cD.sal.forEach(r => {
+    if (multiProgMode && r.programs && r.programs.length) {
+      r.programs.forEach(prName => {
+        const pr = (r.progPromo && r.progPromo[prName]) || r.promo;
+        const g = getEv(prName, pr); g.sq += r.qty; g.sr += r.rev; g.sl += r.list; if (r.hasList !== false) { g.slK += r.list; g.srK += r.rev; } g.soldSku.add(r.sku); g.soldSt.add(r.store);
+      });
+    } else {
+      const g = getEv(r.program, r.promo); g.sq += r.qty; g.sr += r.rev; g.sl += r.list; if (r.hasList !== false) { g.slK += r.list; g.srK += r.rev; } g.soldSku.add(r.sku); g.soldSt.add(r.store);
+    }
+  });
+  const totEvSr = cD.sal.reduce((a, r) => a + r.rev, 0) || 1;
+  const evalRows = Array.from(evalMap.values()).map(g => {
+    finGroup(g, cD.days);
+    g.revShare = g.sr / totEvSr;
+    const tgt = S.target / 100;
+    if (g.sq === 0 && g.iq > 0) g.evalTag = '<span class="tag bad">Chưa bán được</span>';
+    else if (g.st != null && g.st >= tgt && g.cover != null && g.cover < 15) g.evalTag = '<span class="tag ok">Bán rất tốt · Sắp hết tồn</span>';
+    else if (g.st != null && g.st >= tgt) g.evalTag = '<span class="tag ok">Hiệu quả tốt (Đạt ST)</span>';
+    else if (g.st != null && g.st >= tgt * 0.6) g.evalTag = '<span class="tag warn">Trung bình · Cần đẩy thêm</span>';
+    else g.evalTag = '<span class="tag bad">Bán chậm · Cần xem lại mức ưu đãi</span>';
+    return g;
+  }).filter(g => g.iq > 0 || g.sq > 0);
+  const pgBadge = g => {
+    const cls = g.promoType === 'flat' ? 'info' : (g.promoType === 'amt' ? 'warn' : (g.promoType === 'pct' ? 'ok' : ''));
+    return '<span class="tag ' + cls + '">' + esc(g.promoGroup) + '</span>';
+  };
+  const evalCols = (multiProgMode ? [{ k:'prog', l:'Chương trình' }] : []).concat([
+    { k:'promoGroup', l:'Loại ưu đãi', fmt:(v, g) => pgBadge(g) },
+    { k:'disc', l:'Mức ưu đãi' },
+    { k:'nInvSku', l:'SKU tồn', r:1, fmt:fmtFull },
+    { k:'iq', l:'SL tồn', r:1, fmt:fmtFull },
+    { k:'ic', l:'Vốn tồn', r:1, bar:1, fmt:fmtFull },
+    { k:'sq', l:'SL bán', r:1, fmt:fmtFull },
+    { k:'sr', l:'DT bán', r:1, bar:1, fmt:fmtFull },
+    { k:'revShare', l:'Tỷ trọng DT', r:1, fmt:v => fmtPct(v) },
+    { k:'st', l:'ST %', r:1, fmt:(v, g) => stTag(g) },
+    { k:'cover', l:'Cover', r:1, fmt:fmtCover },
+    { k:'evalTag', l:'Đánh giá hiệu quả', fmt:v => v }
+  ]);
+  const evalT = tbl('promo_eval', { rows: evalRows, cols: evalCols, def: { k:'sr', dir:'desc' }, rowF: 'disc', rowV: g => g.disc, sel: g => S.F.disc === g.disc, pageSize: 20, maxH: 420, file: 'Danh_gia_muc_uu_dai' });
   // khung giá niêm yết (đơn giá) — Tồn chỉ có khi Fact_Inventory có Giá Bán
   const cG = ctx(), bandMap = {};
   const bg = k => bandMap[k] || (bandMap[k] = { key: k, iq: 0, sq: 0, ic: 0, sr: 0 });
@@ -1255,8 +1490,9 @@ function pageBrand(){
       card('Tồn vs Bán theo Nhãn hàng', unitLbl(), hbars(pairRows(bG), { f:'brand', series:SER(), fmt:f })) +
       card('Tồn vs Bán theo Dòng hàng', unitLbl(), hbars(pairRows(lG), { f:'line', series:SER(), fmt:f })) + '</div>' +
     '<div class="grid g2">' +
-      card('Theo Mức giảm giá', 'Hàng giảm sâu có bán nhanh hơn không? ' + unitLbl(), hbars(pairRows(dG, g => 'Giảm ' + g.key, null), { f:'disc', series:SER(), fmt:f })) +
+      card('Theo Mức ưu đãi (Cột F)', 'So sánh tốc độ bán theo % giảm, Đồng giá, Giảm tiền cố định… ' + unitLbl(), hbars(pairRows(dG, g => g.key, g => 'ST ' + fmtPct(g.st) + ' · Cover ' + fmtCover(g.cover)), { f:'disc', series:SER(), fmt:f })) +
       card('Theo Khung giá niêm yết (SL)', 'Giá niêm yết ước tính trên đơn vị = DT ÷ (1 − % giảm) ÷ SL. ' + (M.dq.noPriceRows === M.inv.length && M.inv.length ? 'Tồn kho chưa có Giá Bán nên chưa chia khung.' : ''), hbars(bandRows, { series:[{ name:'SL tồn', color:C.navy }, { name:'SL bán', color:C.gold }], fmt:fmtQty })) + '</div>' +
+    '<div class="grid">' + card('Bảng Đánh giá Cơ chế & Mức ưu đãi' + (multiProgMode ? ' theo từng Chương trình' : ''), 'Tự động phân loại % giảm, Đồng giá, Giảm tiền cố định và đánh giá theo Sell-through & Days of Cover · Bấm dòng để lọc', evalT) + '</div>' +
     card('SKU trong phạm vi lọc', 'Bấm dòng để xem chi tiết tại trang Chi tiết SKU', skuT);
 }
 
@@ -1350,7 +1586,7 @@ function skuGroups(c){
       multiProg: p && p.programs && p.programs.length > 1,
       brand: p ? p.brand : NA_DM,
       line: p ? p.line : NA_DM,
-      discL: p && p.disc != null ? pctLabel(p.disc) : 'N/A',
+      discL: p ? (S.F.program && p.progPromo && p.progPromo[S.F.program] ? p.progPromo[S.F.program].label : p.promoLabels.join(' / ')) : 'Chưa rõ ưu đãi',
       alertCode: alertCode.trim(),
       alertLabel,
       alertCls,
@@ -1397,7 +1633,7 @@ function buildTransferPlan(c){
           sku,
           brand: p ? p.brand : NA_DM,
           line: p ? p.line : NA_DM,
-          discL: p && p.disc != null ? pctLabel(p.disc) : 'N/A',
+          discL: p ? (S.F.program && p.progPromo && p.progPromo[S.F.program] ? p.progPromo[S.F.program].label : p.promoLabels.join(' / ')) : 'Chưa rõ ưu đãi',
           fromStore: storeName(dnr.store),
           fromKlass: dnr.klass,
           fromAsm: dnr.asm,
@@ -1476,7 +1712,7 @@ function pageSku(){
         { k:'sku', l:'Mã SP' },
         { k:'brand', l:'Nhãn' },
         { k:'line', l:'Dòng hàng' },
-        { k:'discL', l:'% giảm', r:1 },
+        { k:'discL', l:'Mức ưu đãi', r:1 },
         { k:'fromStore', l:'CH Xuất (Đang tồn, Bán=0)' },
         { k:'fromKlass', l:'Loại CH Xuất', fmt:v => '<span class="tag ' + (String(v).toLowerCase().indexOf('không')>=0 ? 'bad' : 'warn') + '">' + esc(v) + '</span>' },
         { k:'fromInv', l:'Tồn CH Xuất', r:1, fmt:fmtFull },
@@ -1554,7 +1790,7 @@ function pageSku(){
         { k:'role', l:'Đề xuất điều chuyển cho mã ' + skuSel, fmt:v => v ? '<span class="tag ' + (v.indexOf('🔥')>=0 ? 'bad' : v.indexOf('✔')>=0 ? 'ok' : 'warn') + '">' + esc(v) + '</span>' : '' }
       ],
       def: { k:'sq', dir:'desc' }, rowF:'store', rowV:g => g.key, tool:false, csv:true, file:'Chi_tiet_SKU_' + skuSel, maxH:340 });
-    det = '<div style="height:14px"></div>' + card('Chi tiết phân bổ & Điều chuyển SKU: ' + esc(skuSel), p ? esc(p.brand + ' · ' + p.line + ' · giảm ' + (p.disc != null ? pctLabel(p.disc) : 'N/A')) : 'Không có trong Dim_Product', td,
+    det = '<div style="height:14px"></div>' + card('Chi tiết phân bổ & Điều chuyển SKU: ' + esc(skuSel), p ? esc(p.brand + ' · ' + p.line + ' · ' + (S.F.program && p.progPromo && p.progPromo[S.F.program] ? p.progPromo[S.F.program].label : p.promoLabels.join(' / '))) : 'Không có trong Dim_Product', td,
       '<button class="btn dark" data-act="pickSku" data-v="' + esc(skuSel) + '">✕ Đóng chi tiết SKU</button>');
   }
   return alertCards + det + (det ? '<div style="height:14px"></div>' : '') + card(' Trung tâm Cảnh báo & Điều chuyển SKU', 'Bấm vào các thẻ cảnh báo phía trên để lọc nhanh · Bấm vào 1 dòng mã SP để xem cửa hàng nào nên xuất / cửa hàng nào nên nhận', main, viewSel);
@@ -1584,12 +1820,12 @@ function pageDq(){
   }).join('') + '</tbody></table>';
   return '<div class="grid g2">' + card('Kiểm tra chất lượng dữ liệu', 'Kết quả đọc trên dữ liệu hiện đang nạp', checks) +
     '<div>' + card('Trạng thái dữ liệu', 'Thời điểm nạp từng bảng', lt) + '<div style="height:14px"></div>' + card('Thông tin tham khảo', '', info) +
-    '<div style="height:14px"></div>' + card('Quy ước tính toán', '', '<ul style="margin:0;padding-left:18px;line-height:1.7"><li><b>Sell-through</b> = SL bán ÷ (SL bán + SL tồn hiện tại).</li><li><b>Days of cover</b> = SL tồn ÷ (SL bán ÷ số ngày có dữ liệu bán).</li><li><b>Giá niêm yết ước tính</b> = Doanh thu ÷ (1 − % giảm) — Doanh thu bán là giá sau giảm.</li><li>Bộ lọc ngày chỉ áp dụng cho dữ liệu bán; Tồn kho là số hiện tại.</li><li>Khung giá tồn kho tính theo Giá Bán ÷ SL của từng dòng (nếu có).</li></ul>') + '</div></div>';
+    '<div style="height:14px"></div>' + card('Quy ước tính toán', '', '<ul style="margin:0;padding-left:18px;line-height:1.7"><li><b>Sell-through</b> = SL bán ÷ (SL bán + SL tồn hiện tại).</li><li><b>Days of cover</b> = SL tồn ÷ (SL bán ÷ số ngày có dữ liệu bán).</li><li><b>Mức ưu đãi (Cột F Dim_Product):</b> Tự nhận diện 4 hình thức — <i>Giảm theo %</i> (vd: 30%, 0.3), <i>Đồng giá</i> (vd: Đồng giá 999k, 1.5tr), <i>Giảm tiền cố định</i> (vd: Giảm 500k, -1tr) và <i>Ưu đãi khác</i> (vd: Mua 1 tặng 1).</li><li><b>Giá niêm yết &amp; % giảm bình quân:</b> Giảm % tính bằng <code>DT ÷ (1 − % giảm)</code>; Giảm tiền tính bằng <code>DT + Mức giảm × SL</code>; Đồng giá ưu tiên lấy theo Giá Bán ở tồn kho (nếu có), nếu không sẽ tách riêng để không làm lệch % giảm bình quân của nhóm giảm %.</li><li>Bộ lọc ngày chỉ áp dụng cho dữ liệu bán; Tồn kho là số hiện tại.</li><li>Khung giá tồn kho tính theo Giá Bán ÷ SL của từng dòng (nếu có).</li></ul>') + '</div></div>';
 }
 const PAGES = { overview: pageOverview, asm: pageAsm, store: pageStore, brand: pageBrand, sku: pageSku, dq: pageDq };
 
 /* ---------- Khung chung: bộ lọc, chip, điều hướng ---------- */
-const FLABEL = { program:'Chương trình', asm:'ASM', province:'Tỉnh', store:'CH', klass:'Phân loại CH', brand:'Nhãn', line:'Dòng hàng', disc:'Mức giảm', sku:'SKU' };
+const FLABEL = { program:'Chương trình', asm:'ASM', province:'Tỉnh', store:'CH', klass:'Phân loại CH', brand:'Nhãn', line:'Dòng hàng', promoGroup:'Loại ưu đãi', disc:'Mức ưu đãi', sku:'SKU' };
 function renderFilters(){
   const M = S.M, F = S.F; if (!M) return;
   const geo = Array.from(M.geo.values());
@@ -1602,7 +1838,7 @@ function renderFilters(){
   const same = a => a.map(x => [x, x]);
   $('filters').innerHTML =
     sel('program', 'Chương trình', same(M.opts.program)) + sel('asm', 'ASM', same(M.opts.asm)) + sel('province', 'Tỉnh', same(provs)) + sel('store', 'Cửa hàng', stores.map(s => [s.code, s.code + ' · ' + s.name])) +
-    sel('klass', 'Phân loại CH', same(M.opts.klass)) + sel('brand', 'Nhãn hàng', same(M.opts.brand)) + sel('line', 'Dòng hàng', same(M.opts.line)) + sel('disc', 'Mức giảm', same(M.opts.disc)) +
+    sel('klass', 'Phân loại CH', same(M.opts.klass)) + sel('brand', 'Nhãn hàng', same(M.opts.brand)) + sel('line', 'Dòng hàng', same(M.opts.line)) + (M.opts.promoGroup.length > 1 ? sel('promoGroup', 'Loại ưu đãi', same(M.opts.promoGroup)) : '') + sel('disc', 'Mức ưu đãi', same(M.opts.disc)) +
     '<div class="fl"><label>Bán từ ngày</label><input type="date" data-fk="dateFrom" class="' + (F.dateFrom ? 'act' : '') + '" value="' + (F.dateFrom || '') + '" min="' + (M.dMin || '') + '" max="' + (M.dMax || '') + '"></div>' +
     '<div class="fl"><label>Đến ngày</label><input type="date" data-fk="dateTo" class="' + (F.dateTo ? 'act' : '') + '" value="' + (F.dateTo || '') + '" min="' + (M.dMin || '') + '" max="' + (M.dMax || '') + '"></div>' +
     '<div class="fl"><label>Mục tiêu ST %</label><input type="number" class="tgt" min="1" max="100" step="1" value="' + S.target + '" data-act="target"></div>' +
