@@ -271,6 +271,55 @@ svg text{font-family:'Montserrat',sans-serif}
 .admin-lock-bar.on{display:flex}
 .admin-lock-bar button{background:#fff;color:#B3261E;border:0;border-radius:6px;padding:5px 12px;font-size:12px;font-weight:700}
 .admin-lock-bar button:hover{background:#FFF1BD}
+
+/* ===== BỘ LỌC ĐA CHỌN LIÊN KẾT (MULTI-SELECT CASCADING) ===== */
+.ms{position:relative}
+.ms-btn{display:flex;align-items:center;justify-content:space-between;gap:6px;background:#fff;border:1px solid transparent;border-radius:5px;padding:0 7px;font:12px 'Montserrat',sans-serif;color:var(--ink);min-width:112px;max-width:176px;height:27px;text-align:left;white-space:nowrap}
+.ms-btn .ms-t{overflow:hidden;text-overflow:ellipsis;flex:1}
+.ms-btn .ms-c{font-size:9px;opacity:.65;flex:none}
+.ms-btn.act{border-color:var(--gold);box-shadow:0 0 0 2px rgba(212,175,55,.45);background:#FFF9E3;font-weight:700;color:var(--navy)}
+.ms-pop{position:absolute;top:31px;left:0;z-index:260;background:#fff;border:1px solid var(--gold);border-radius:8px;box-shadow:0 12px 30px rgba(15,35,68,.28);min-width:225px;max-width:300px;padding:7px;display:none}
+.ms.open .ms-pop{display:block}
+.ms-pop.right{left:auto;right:0}
+.ms-srch{width:100%;border:1px solid var(--line);border-radius:5px;padding:4px 7px;font:11.5px 'Montserrat',sans-serif;margin-bottom:5px;outline:none}
+.ms-srch:focus{border-color:var(--gold)}
+.ms-bar{display:flex;justify-content:space-between;align-items:center;padding:2px 2px 5px;border-bottom:1px solid #EFEBDA;margin-bottom:4px;font-size:10.5px}
+.ms-bar button{background:none;border:0;color:var(--navy3);font-weight:700;font-size:10.5px;padding:1px 3px}
+.ms-bar button:hover{text-decoration:underline;color:var(--navy)}
+.ms-list{max-height:230px;overflow-y:auto;display:flex;flex-direction:column;gap:1px}
+.ms-item{display:flex;align-items:center;gap:6px;padding:4px 5px;border-radius:4px;cursor:pointer;font-size:11.5px;color:var(--ink);user-select:none}
+.ms-item:hover{background:#FFF7D6}
+.ms-item input{margin:0;accent-color:var(--navy);cursor:pointer;flex:none}
+.ms-item span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap;flex:1}
+.ms-empty{color:var(--muted);font-size:11px;text-align:center;padding:10px 4px;font-style:italic}
+
+/* ===== TRANG THIẾT LẬP ĐỊNH MỨC & ĐIỀU CHUYỂN ===== */
+.tr-ctrl{display:flex;flex-wrap:wrap;gap:10px 14px;align-items:flex-end;background:#FBF9F2;border:1px solid var(--line);border-radius:8px;padding:10px 14px;margin-bottom:12px}
+.tr-ctrl .fg{display:flex;flex-direction:column;gap:3px}
+.tr-ctrl .fg label{font-size:10px;font-weight:700;color:var(--navy);text-transform:uppercase;letter-spacing:.5px}
+.tr-ctrl select,.tr-ctrl input[type=number]{border:1px solid var(--line);border-radius:5px;padding:4px 7px;font:12px 'Montserrat',sans-serif;color:var(--ink);height:29px;background:#fff}
+.tr-src{display:flex;flex-wrap:wrap;gap:10px;align-items:center;font-size:11.5px;color:var(--navy);font-weight:600}
+.tr-src label{display:inline-flex;align-items:center;gap:5px;cursor:pointer}
+.tr-src input{accent-color:var(--navy);cursor:pointer}
+.tr-pct-bar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;padding:8px 10px;background:#F5F8FD;border:1px solid #C8D6EE;border-radius:7px;margin-bottom:10px}
+.tr-pct-item{display:flex;align-items:center;gap:5px;background:#fff;border:1px solid var(--line);border-radius:6px;padding:4px 8px;font-size:11.5px}
+.tr-pct-item b{color:var(--navy)}
+.tr-pct-item input{width:54px;border:1px solid var(--line);border-radius:4px;padding:2px 4px;text-align:right;font:600 12px 'Montserrat',sans-serif;color:var(--navy)}
+.tr-mx{overflow:auto;max-height:460px;border:1px solid var(--line);border-radius:6px}
+table.tmx{border-collapse:collapse;width:100%;font-size:11.5px}
+table.tmx th{position:sticky;top:0;background:var(--navy);color:var(--gold2);padding:7px 8px;font-size:10.5px;text-align:center;white-space:nowrap;z-index:2;border-right:1px solid rgba(255,255,255,.12)}
+table.tmx th.l{text-align:left;position:sticky;left:0;z-index:3;min-width:190px}
+table.tmx tr.bulk-row th{top:31px;background:#EDE6C8;color:var(--navy);padding:5px 6px;border-bottom:2px solid var(--gold)}
+table.tmx td{padding:5px 7px;border-bottom:1px solid #EFEBDA;border-right:1px solid #F3EFE0;text-align:center;white-space:nowrap}
+table.tmx td.l{text-align:left;position:sticky;left:0;background:#fff;z-index:1;font-weight:600;color:var(--navy)}
+table.tmx tr:nth-child(even) td{background:#FCFAF3}
+table.tmx tr:nth-child(even) td.l{background:#FCFAF3}
+table.tmx input.t-inp{width:54px;padding:3px 4px;border:1px solid #CFC6A7;border-radius:4px;text-align:center;font:700 12px 'Montserrat',sans-serif;color:var(--navy);background:#fff}
+table.tmx input.t-inp:focus{border-color:var(--gold);box-shadow:0 0 0 2px rgba(212,175,55,.35);outline:none}
+.t-cell{display:flex;flex-direction:column;align-items:center;gap:2px}
+.t-sub{font-size:10px;color:var(--muted)}
+.t-gap-neg{color:var(--red);font-weight:700}
+.t-gap-pos{color:var(--green);font-weight:700}
 </style>
 </head>
 <body>
@@ -309,6 +358,7 @@ svg text{font-family:'Montserrat',sans-serif}
       <button data-page="store" title="Cửa hàng"><span class="ni">🏪</span><span class="nl">Cửa hàng</span></button>
       <button data-page="brand" title="Nhãn &amp; Dòng"><span class="ni">🏷</span><span class="nl">Nhãn &amp; Dòng</span></button>
       <button data-page="sku" title="SKU &amp; Điều chuyển"><span class="ni">📦</span><span class="nl">SKU</span></button>
+      <button data-page="transfer" title="Thiết lập Định mức &amp; Điều chuyển"><span class="ni">🚚</span><span class="nl">Điều chuyển</span></button>
       <button data-page="dq" title="Chất lượng Dữ liệu"><span class="ni">🛡</span><span class="nl">Dữ liệu</span></button>
     </nav>
     <div class="sb-foot">PNJ Miền Tây · P.CƯ</div>
@@ -355,6 +405,7 @@ svg text{font-family:'Montserrat',sans-serif}
       <section class="page" id="page-store"></section>
       <section class="page" id="page-brand"></section>
       <section class="page" id="page-sku"></section>
+      <section class="page" id="page-transfer"></section>
       <section class="page" id="page-dq"></section>
     </main>
   </div>
@@ -861,6 +912,13 @@ function uniqSorted(a, cmp){ return Array.from(new Set(a.filter(x => x !== '' &&
 /* ---------- Lọc & tổng hợp ---------- */
 function dayDiff(a, b){ return Math.round((Date.UTC(+b.slice(0,4), +b.slice(5,7)-1, +b.slice(8,10)) - Date.UTC(+a.slice(0,4), +a.slice(5,7)-1, +a.slice(8,10))) / 86400000); }
 function addDays(iso, n){ const d = new Date(Date.UTC(+iso.slice(0,4), +iso.slice(5,7)-1, +iso.slice(8,10)) + n * 86400000); return d.getUTCFullYear() + '-' + pad2(d.getUTCMonth()+1) + '-' + pad2(d.getUTCDate()); }
+function fArr(F, k){
+  if (!F || F[k] == null || F[k] === '') return [];
+  return Array.isArray(F[k]) ? F[k] : [F[k]];
+}
+function fHas(F, k, v){ return fArr(F, k).indexOf(v) >= 0; }
+function fOne(F, k){ const a = fArr(F, k); return a.length === 1 ? a[0] : null; }
+function fAny(a, b){ for (let i = 0; i < a.length; i++) if (b.indexOf(a[i]) >= 0) return true; return false; }
 function resolveRowPromo(r, prog, invUnitPrice){
   if (!prog || !r.progPromo || !r.progPromo[prog]) return r;
   const pr = r.progPromo[prog];
@@ -884,27 +942,37 @@ function resolveRowPromo(r, prog, invUnitPrice){
   return base;
 }
 function matchDim(r, F){
+  const progsSel = fArr(F, 'program');
   for (let i = 0; i < FILTER_KEYS.length; i++) {
     const k = FILTER_KEYS[i];
-    if (!F[k]) continue;
+    const sel = fArr(F, k);
+    if (!sel.length) continue;
     if (k === 'program') {
-      if (!r.programs || r.programs.indexOf(F.program) < 0) return false;
+      if (!r.programs || !fAny(r.programs, sel)) return false;
     } else if (k === 'disc') {
-      if (F.program) { if (r.disc !== F.disc) return false; }
-      else if (!r.promoLabels || r.promoLabels.indexOf(F.disc) < 0) return false;
+      if (progsSel.length === 1) { if (sel.indexOf(r.disc) < 0) return false; }
+      else if (progsSel.length > 1 && r.progPromo) {
+        const valid = progsSel.some(pr => r.progPromo[pr] && sel.indexOf(r.progPromo[pr].label) >= 0);
+        if (!valid) return false;
+      } else if (!r.promoLabels || !fAny(r.promoLabels, sel)) return false;
     } else if (k === 'promoGroup') {
-      if (F.program) { if (r.promoGroup !== F.promoGroup) return false; }
-      else if (!r.promoGroups || r.promoGroups.indexOf(F.promoGroup) < 0) return false;
-    } else if (r[k] !== F[k]) {
+      if (progsSel.length === 1) { if (sel.indexOf(r.promoGroup) < 0) return false; }
+      else if (progsSel.length > 1 && r.progPromo) {
+        const valid = progsSel.some(pr => r.progPromo[pr] && sel.indexOf(r.progPromo[pr].group) >= 0);
+        if (!valid) return false;
+      } else if (!r.promoGroups || !fAny(r.promoGroups, sel)) return false;
+    } else if (sel.indexOf(r[k]) < 0) {
       return false;
     }
   }
   return true;
 }
 function filterData(M, F){
-  const invSrc = F.program ? M.inv.filter(r => r.programs && r.programs.indexOf(F.program) >= 0).map(r => resolveRowPromo(r, F.program, M.invUnitPrice)) : M.inv;
+  const pArr = fArr(F, 'program');
+  const pOne = pArr.length === 1 ? pArr[0] : null;
+  const invSrc = pOne ? M.inv.filter(r => r.programs && r.programs.indexOf(pOne) >= 0).map(r => resolveRowPromo(r, pOne, M.invUnitPrice)) : M.inv;
   const inv = invSrc.filter(r => matchDim(r, F));
-  const salSrc = F.program ? M.sal.filter(r => r.programs && r.programs.indexOf(F.program) >= 0).map(r => resolveRowPromo(r, F.program, M.invUnitPrice)) : M.sal;
+  const salSrc = pOne ? M.sal.filter(r => r.programs && r.programs.indexOf(pOne) >= 0).map(r => resolveRowPromo(r, pOne, M.invUnitPrice)) : M.sal;
   const sal = salSrc.filter(r => matchDim(r, F) && (!F.dateFrom || r.date >= F.dateFrom) && (!F.dateTo || r.date <= F.dateTo));
   return { inv, sal };
 }
@@ -944,18 +1012,22 @@ function dailySeries(M, F, sal){
   return out;
 }
 function geoStoreSeed(M, F){
-  const keys = [];
-  M.geo.forEach(s => { if ((!F.asm || s.asm === F.asm) && (!F.province || s.province === F.province) && (!F.store || s.code === F.store) && (!F.klass || s.klass === F.klass)) keys.push(s.code); });
+  const keys = [], aA = fArr(F,'asm'), aP = fArr(F,'province'), aS = fArr(F,'store'), aK = fArr(F,'klass');
+  M.geo.forEach(s => {
+    if ((!aA.length || aA.indexOf(s.asm) >= 0) && (!aP.length || aP.indexOf(s.province) >= 0) && (!aS.length || aS.indexOf(s.code) >= 0) && (!aK.length || aK.indexOf(s.klass) >= 0)) keys.push(s.code);
+  });
   return keys;
 }
 function prodsPassing(M, F){
   let n = 0;
+  const aPr = fArr(F,'program'), aPg = fArr(F,'promoGroup'), aD = fArr(F,'disc'), aB = fArr(F,'brand'), aL = fArr(F,'line'), aSku = fArr(F,'sku');
+  const pOne = aPr.length === 1 ? aPr[0] : null;
   M.prods.forEach(p => {
-    const okProg = !F.program || (p.programs && p.programs.indexOf(F.program) >= 0);
-    const pr = (F.program && p.progPromo && p.progPromo[F.program]) ? p.progPromo[F.program] : p.promo;
-    const okPg = !F.promoGroup || (F.program ? pr.group === F.promoGroup : (p.promoGroups && p.promoGroups.indexOf(F.promoGroup) >= 0));
-    const okDisc = !F.disc || (F.program ? pr.label === F.disc : (p.promoLabels && p.promoLabels.indexOf(F.disc) >= 0));
-    if (okProg && okPg && (!F.brand || p.brand === F.brand) && (!F.line || p.line === F.line) && okDisc && (!F.sku || p.sku === F.sku)) n++;
+    const okProg = !aPr.length || (p.programs && fAny(p.programs, aPr));
+    const pr = (pOne && p.progPromo && p.progPromo[pOne]) ? p.progPromo[pOne] : p.promo;
+    const okPg = !aPg.length || (pOne ? aPg.indexOf(pr.group) >= 0 : (p.promoGroups && fAny(p.promoGroups, aPg)));
+    const okDisc = !aD.length || (pOne ? aD.indexOf(pr.label) >= 0 : (p.promoLabels && fAny(p.promoLabels, aD)));
+    if (okProg && okPg && (!aB.length || aB.indexOf(p.brand) >= 0) && (!aL.length || aL.indexOf(p.line) >= 0) && okDisc && (!aSku.length || aSku.indexOf(p.sku) >= 0)) n++;
   });
   return n;
 }
@@ -969,7 +1041,7 @@ const BAND_ORDER = ['< 1 tr','1 – 3 tr','3 – 5 tr','5 – 10 tr','10 – 20 
 
 /* ====================== GIAO DIỆN ====================== */
 const C = { navy:'#19437D', navy2:'#23579C', steel:'#5480BA', gold:'#D4AF37', gold2:'#E8D9A8', bronze:'#A67C00', sky:'#9FB3D1', red:'#B3261E', green:'#2E7D32' };
-const S = { M:null, raw:null, meta:{}, role:null, dbStatus:{ locked:false, message:'Hệ thống đang tạm đóng để Phòng Cung Ứng cập nhật số liệu mới. Vui lòng quay lại sau!', updatedAt:'' }, user:{ canUpload:true }, mode:'val', page:'overview', F:{}, target:30, heat:{}, selSku:null, skuView:'sku', skuFlag:'all', stg:[], busy:false, _cx:{} };
+const S = { M:null, raw:null, meta:{}, role:null, openMs:null, msQ:{}, tr:{ prog:'', scope:'sale', mode:'pct', srcDc:true, srcNonSale:true, srcSurplus:true, targets:{}, pcts:{}, bulkTotal:30 }, dbStatus:{ locked:false, message:'Hệ thống đang tạm đóng để Phòng Cung Ứng cập nhật số liệu mới. Vui lòng quay lại sau!', updatedAt:'' }, user:{ canUpload:true }, mode:'val', page:'overview', F:{}, target:30, heat:{}, selSku:null, skuView:'sku', skuFlag:'all', stg:[], busy:false, _cx:{} };
 const nf = new Intl.NumberFormat('vi-VN', { maximumFractionDigits: 0 });
 const $ = id => document.getElementById(id);
 function esc(s){ return String(s == null ? '' : s).replace(/[&<>"']/g, c => ({ '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;' }[c])); }
@@ -1093,7 +1165,7 @@ function hbars(rows, o){
   let max = 0; rows.forEach(r => r.vals.forEach(v => { if (v > max) max = v; })); if (!max) max = 1;
   const leg = '<div class="legend">' + o.series.map(s => '<span><i style="background:' + s.color + '"></i>' + esc(s.name) + '</span>').join('') + '</div>';
   return leg + rows.map(r => {
-    const sel = o.f && S.F[o.f] === r.key;
+    const sel = o.f && fHas(S.F, o.f, r.key);
     const bars = r.vals.map((v, i) => {
       const pct = Math.max(0, v / max * 100), inside = pct > 40, tc = o.series[i].color === C.gold ? C.navy : '#fff';
       const pos = inside ? 'left:auto;right:calc(' + (100 - pct) + '% + 5px);color:' + tc : 'left:calc(' + pct + '% + 4px);color:' + C.navy;
@@ -1106,7 +1178,7 @@ function diverge(rows, o){
   if (!rows.length) return '<div class="empty">Không có dữ liệu</div>';
   const mx = Math.max(1e-9, Math.max.apply(null, rows.map(r => Math.abs(r.v))));
   return rows.map(r => {
-    const w = Math.abs(r.v) / mx * 50, pos = r.v >= 0, sel = S.F[o.f] === r.key;
+    const w = Math.abs(r.v) / mx * 50, pos = r.v >= 0, sel = fHas(S.F, o.f, r.key);
     return '<div class="dv-row' + (sel ? ' sel' : '') + '" data-f="' + o.f + '" data-v="' + esc(r.key) + '" title="' + esc(r.label) + '"><div class="hb-lab">' + esc(r.label) + '</div><div class="dv-track"><i style="' + (pos ? 'left:50%' : 'right:50%') + ';width:' + w + '%;background:' + (pos ? C.gold : C.navy) + '"></i></div><div class="dv-val" style="color:' + (pos ? C.bronze : C.navy) + '">' + (pos ? '+' : '') + dec(r.v * 100, 1) + ' pp</div></div>';
   }).join('');
 }
@@ -1128,7 +1200,7 @@ function heat(id, rowKeys, colKeys, cellOf, o){
       const v = cells[r + '\u0001' + c], has = v != null && v > 0;
       const a = has ? Math.max(.1, v / max) : 0;
       const dark = hm.t === 'ton' && a > .5;
-      const isSel = S.F[o.rowF] === r && S.F[o.colF] === c;
+      const isSel = fHas(S.F, o.rowF, r) && fHas(S.F, o.colF, c);
       const set = {}; set[o.rowF] = r; set[o.colF] = c;
       h += '<td class="' + (isSel ? 'sel' : '') + '" data-set="' + esc(JSON.stringify(set)) + '" style="background:' + (has ? 'rgba(' + rgb + ',' + a.toFixed(2) + ')' : '#F6F3E8') + ';color:' + (dark ? '#fff' : C.navy) + '" title="' + esc(r + ' × ' + c) + '">' + (has ? hm.f(v) : '·') + '</td>';
     });
@@ -1299,7 +1371,7 @@ function pageOverview(){
       { k:'code', l:'CH', v:g => storeName(g.key), title:g => storeName(g.key) },
       { k:'ic', l:'Vốn tồn', r:1, bar:1, fmt:fmtFull }, { k:'iq', l:'SL tồn', r:1, fmt:fmtFull },
       { k:'sq', l:'SL bán', r:1, fmt:fmtFull }, { k:'st', l:'ST %', r:1, fmt:(v, g) => stTag(g) } ],
-    def: { k:'ic', dir:'desc' }, rowF: 'store', rowV: g => g.key, sel: g => S.F.store === g.key, pageSize: 10, tool: false, csv: false, maxH: 380 });
+    def: { k:'ic', dir:'desc' }, rowF: 'store', rowV: g => g.key, sel: g => fHas(S.F, 'store', g.key), pageSize: 10, tool: false, csv: false, maxH: 380 });
   const isAdmin = S.role === 'admin';
   return kp +
     '<div class="grid g21">' +
@@ -1331,27 +1403,27 @@ function pageOverview(){
 
 function pageAsm(){
   const M = S.M, c = ctxX('asm'), F2 = Object.assign({}, S.F); delete F2.asm;
-  const aG = aggregate(c.inv, c.sal, r => r.asm, c.days, S.F.asm && !M.opts.asm.includes(S.F.asm) ? M.opts.asm.concat(S.F.asm) : M.opts.asm).filter(g => g.key !== NA_CH || g.iq > 0 || g.sq > 0).sort((a, b) => (a.key === NA_CH) - (b.key === NA_CH) || a.key.localeCompare(b.key, 'vi'));
+  const aG = aggregate(c.inv, c.sal, r => r.asm, c.days, M.opts.asm.concat(fArr(S.F,'asm').filter(x => !M.opts.asm.includes(x)))).filter(g => g.key !== NA_CH || g.iq > 0 || g.sq > 0).sort((a, b) => (a.key === NA_CH) - (b.key === NA_CH) || a.key.localeCompare(b.key, 'vi'));
   const sG = storeGroups(c, F2), cnt = {};
   sG.forEach(g => { const s = M.geo.get(g.key); if (!s) return; const o = cnt[s.asm] || (cnt[s.asm] = { n: 0, none: 0, nChTon: 0 }); o.n++; if (g.sq === 0) o.none++; });
   const f = MF();
   const regionOf = a => { const s = Array.from(M.geo.values()).find(x => x.asm === a); return s ? s.region : ''; };
   const cards = '<div class="grid g4">' + aG.map(g => {
     const o = cnt[g.key] || { n: 0, none: 0 }, pct = g.st == null ? 0 : Math.min(100, g.st * 100 / Math.max(S.target, 1) * 50), mark = 50;
-    return '<div class="asmcard' + (S.F.asm === g.key ? ' sel' : '') + '" data-f="asm" data-v="' + esc(g.key) + '"><h4>' + esc(g.key) + '</h4><div class="rg">' + esc(regionOf(g.key)) + ' · ' + o.n + ' CH · <b>' + o.none + '</b> CH chưa bán</div>' +
+    return '<div class="asmcard' + (fHas(S.F, 'asm', g.key) ? ' sel' : '') + '" data-f="asm" data-v="' + esc(g.key) + '"><h4>' + esc(g.key) + '</h4><div class="rg">' + esc(regionOf(g.key)) + ' · ' + o.n + ' CH · <b>' + o.none + '</b> CH chưa bán</div>' +
       '<div class="nums"><div>Tồn<b>' + f(tonOf(g)) + '</b></div><div>Bán<b>' + f(banOf(g)) + '</b></div></div>' +
       '<div class="prog"><i style="width:' + pct + '%"></i><u style="left:' + mark + '%"></u></div><div class="prog-l"><span>ST <b>' + fmtPct(g.st) + '</b></span><span>Mục tiêu ' + S.target + '%</span></div></div>';
   }).join('') + '</div>';
   const cP = ctxX('province'), pG = aggregate(cP.inv, cP.sal, r => r.province, cP.days);
   const cH = ctxX('asm', 'line'), h = heat('asm_line', M.opts.asm, M.opts.line, (r, col) => aG2(cH).get(r + '\u0001' + col) || null, { rowF:'asm', colF:'line' });
-  const sel = S.F.asm ? storeGroups(ctx()) : sG;
+  const sel = fArr(S.F,'asm').length ? storeGroups(ctx()) : sG;
   const t = tbl('asm_stores', { rows: sel, cols: storeCols(b => b.filter(x => ['code','name','province','cht','iq','ic','sq','sr','st','cover'].indexOf(x.k) >= 0)),
-    def: { k:'ic', dir:'desc' }, rowF:'store', rowV:g => g.key, sel:g => S.F.store === g.key, searchFn:g => storeName(g.key) + ' ' + ((M.geo.get(g.key) || {}).cht || ''), file:'CH_theo_ASM' });
+    def: { k:'ic', dir:'desc' }, rowF:'store', rowV:g => g.key, sel:g => fHas(S.F, 'store', g.key), searchFn:g => storeName(g.key) + ' ' + ((M.geo.get(g.key) || {}).cht || ''), file:'CH_theo_ASM' });
   return cards +
     '<div class="grid g2">' +
       card('Tồn vs Bán theo Tỉnh', 'Bấm vào tỉnh để lọc', hbars(pairRows(pG), { f:'province', series:SER(), fmt:f })) +
       card('Ma trận ASM × Dòng hàng', 'Chọn chỉ số hiển thị; bấm ô để lọc cả ASM và Dòng hàng', h.html, h.sel) + '</div>' +
-    card('Danh sách Cửa hàng' + (S.F.asm ? ' — ' + esc(S.F.asm) : ' — tất cả ASM'), 'Bấm dòng để xem CH ở các trang khác', t);
+    card('Danh sách Cửa hàng' + (fArr(S.F,'asm').length ? ' — ' + esc(fArr(S.F,'asm').join(', ')) : ' — tất cả ASM'), 'Bấm dòng để xem CH ở các trang khác', t);
 }
 const _aCache = {};
 function aG2(c){
@@ -1367,9 +1439,10 @@ function aG2(c){
 function pageStore(){
   const M = S.M, c = ctx(), f = MF(), sg = storeGroups(c), cS = ctxX('store'), sgX = storeGroups(cS, cS.F);
   let info = '';
-  if (S.F.store) {
-    const s = M.geo.get(S.F.store) || { code: S.F.store, name: '', asm: '', province: '', cht: '', mail: '', klass: '', region: '' };
-    const g = sg.find(x => x.key === S.F.store) || {};
+  const stOne = fOne(S.F, 'store');
+  if (stOne) {
+    const s = M.geo.get(stOne) || { code: stOne, name: '', asm: '', province: '', cht: '', mail: '', klass: '', region: '' };
+    const g = sg.find(x => x.key === stOne) || {};
     info = card('Thông tin cửa hàng', 'CH đang được chọn', '<div class="infobox"><div><span>Mã · Tên</span><b>' + esc(s.code + ' · ' + s.name) + '</b></div><div><span>ASM · Khu vực</span><b>' + esc(s.asm + ' · ' + (s.region || '')) + '</b></div>' +
       '<div><span>Tỉnh</span><b>' + esc(s.province) + '</b></div><div><span>Phân loại CH</span><b>' + esc(s.klass) + '</b></div>' +
       '<div><span>Cửa hàng trưởng</span><b>' + esc(s.cht || '—') + '</b></div><div><span>Email</span><b>' + (s.mail ? '<a href="mailto:' + esc(s.mail) + '">' + esc(s.mail) + '</a>' : '—') + '</b></div>' +
@@ -1381,7 +1454,7 @@ function pageStore(){
   const cK = ctxX('klass'), kG = aggregate(cK.inv, cK.sal, r => r.klass, cK.days);
   const none = sg.filter(g => g.sq === 0);
   const mails = none.map(g => (M.geo.get(g.key) || {}).mail).filter(Boolean);
-  const t = tbl('store_all', { rows: sg, cols: storeCols(), def: { k:'ic', dir:'desc' }, rowF:'store', rowV:g => g.key, sel:g => S.F.store === g.key,
+  const t = tbl('store_all', { rows: sg, cols: storeCols(), def: { k:'ic', dir:'desc' }, rowF:'store', rowV:g => g.key, sel:g => fHas(S.F, 'store', g.key),
     searchFn:g => storeName(g.key) + ' ' + ((M.geo.get(g.key) || {}).cht || '') + ' ' + ((M.geo.get(g.key) || {}).province || ''), file:'Danh_sach_CH', pageSize:40, maxH:560 });
   const t2 = tbl('store_none', { rows: none.filter(g => g.iq > 0 || true), cols: [
       { k:'code', l:'CH', v:g => storeName(g.key) }, { k:'asm', l:'ASM', v:g => (M.geo.get(g.key) || {}).asm || '' },
@@ -1394,7 +1467,7 @@ function pageStore(){
       card('Top 10 CH theo ' + (S.mode === 'val' ? 'doanh thu bán' : 'SL bán'), 'Bấm để chọn CH', hbars(topBan, { f:'store', series:[SER()[1]], fmt:f })) + '</div>' +
     '<div class="grid g12">' +
       card('So sánh theo Phân loại CH', 'Tồn vs Bán', hbars(pairRows(kG), { f:'klass', series:SER(), fmt:f })) +
-      card('Xu hướng bán theo ngày', S.F.store ? 'Của CH đang chọn' : 'Toàn bộ CH trong phạm vi lọc', '<div class="svgbox">' + trendSVG(dailySeries(M, c.F, c.sal)) + '</div>') + '</div>' +
+      card('Xu hướng bán theo ngày', fArr(S.F,'store').length ? 'Của CH đang chọn' : 'Toàn bộ CH trong phạm vi lọc', '<div class="svgbox">' + trendSVG(dailySeries(M, c.F, c.sal)) + '</div>') + '</div>' +
     card('Danh sách Cửa hàng', 'Sắp xếp bằng cách bấm tiêu đề cột · bấm dòng để lọc theo CH', t) +
     (S.role === 'admin' ? '<div style="height:14px"></div>' + card('Cảnh báo CH chưa phát sinh bán (' + none.length + ' CH)', 'Dùng để nhắc việc CHT', t2, mails.length ? '<button class="btn dark" data-act="copymail" data-n="' + mails.length + '">Sao chép ' + mails.length + ' email CHT</button>' : '') : '');
 }
@@ -1414,11 +1487,11 @@ function pageBrand(){
   dG.sort((a, b) => dOrd.indexOf(a.key) - dOrd.indexOf(b.key));
   // Bảng đánh giá chi tiết từng Chương trình × Mức ưu đãi (hỗ trợ đa chương trình & đa hình thức giảm giá)
   const evalMap = new Map();
-  const multiProgMode = !S.F.program && M.opts.program.filter(x => x !== NA_DM).length > 1;
+  const multiProgMode = fArr(S.F,'program').length !== 1 && M.opts.program.filter(x => x !== NA_DM).length > 1;
   const getEv = (prog, pr) => {
     const k = (multiProgMode ? prog + '\u0001' : '') + pr.label;
     let g = evalMap.get(k);
-    if (!g) { g = Object.assign(newGroup(k), { prog: multiProgMode ? prog : (S.F.program || M.program || 'Tất cả'), promoGroup: pr.group, promoType: pr.type, disc: pr.label, sort: pr.sort }); evalMap.set(k, g); }
+    if (!g) { g = Object.assign(newGroup(k), { prog: multiProgMode ? prog : (fOne(S.F,'program') || M.program || 'Tất cả'), promoGroup: pr.group, promoType: pr.type, disc: pr.label, sort: pr.sort }); evalMap.set(k, g); }
     return g;
   };
   cD.inv.forEach(r => {
@@ -1470,7 +1543,7 @@ function pageBrand(){
     { k:'cover', l:'Cover', r:1, fmt:fmtCover },
     { k:'evalTag', l:'Đánh giá hiệu quả', fmt:v => v }
   ]);
-  const evalT = tbl('promo_eval', { rows: evalRows, cols: evalCols, def: { k:'sr', dir:'desc' }, rowF: 'disc', rowV: g => g.disc, sel: g => S.F.disc === g.disc, pageSize: 20, maxH: 420, file: 'Danh_gia_muc_uu_dai' });
+  const evalT = tbl('promo_eval', { rows: evalRows, cols: evalCols, def: { k:'sr', dir:'desc' }, rowF: 'disc', rowV: g => g.disc, sel: g => fHas(S.F, 'disc', g.disc), pageSize: 20, maxH: 420, file: 'Danh_gia_muc_uu_dai' });
   // khung giá niêm yết (đơn giá) — Tồn chỉ có khi Fact_Inventory có Giá Bán
   const cG = ctx(), bandMap = {};
   const bg = k => bandMap[k] || (bandMap[k] = { key: k, iq: 0, sq: 0, ic: 0, sr: 0 });
@@ -1586,7 +1659,7 @@ function skuGroups(c){
       multiProg: p && p.programs && p.programs.length > 1,
       brand: p ? p.brand : NA_DM,
       line: p ? p.line : NA_DM,
-      discL: p ? (S.F.program && p.progPromo && p.progPromo[S.F.program] ? p.progPromo[S.F.program].label : p.promoLabels.join(' / ')) : 'Chưa rõ ưu đãi',
+      discL: p ? (fOne(S.F,'program') && p.progPromo && p.progPromo[fOne(S.F,'program')] ? p.progPromo[fOne(S.F,'program')].label : p.promoLabels.join(' / ')) : 'Chưa rõ ưu đãi',
       alertCode: alertCode.trim(),
       alertLabel,
       alertCls,
@@ -1633,7 +1706,7 @@ function buildTransferPlan(c){
           sku,
           brand: p ? p.brand : NA_DM,
           line: p ? p.line : NA_DM,
-          discL: p ? (S.F.program && p.progPromo && p.progPromo[S.F.program] ? p.progPromo[S.F.program].label : p.promoLabels.join(' / ')) : 'Chưa rõ ưu đãi',
+          discL: p ? (fOne(S.F,'program') && p.progPromo && p.progPromo[fOne(S.F,'program')] ? p.progPromo[fOne(S.F,'program')].label : p.promoLabels.join(' / ')) : 'Chưa rõ ưu đãi',
           fromStore: storeName(dnr.store),
           fromKlass: dnr.klass,
           fromAsm: dnr.asm,
@@ -1790,10 +1863,501 @@ function pageSku(){
         { k:'role', l:'Đề xuất điều chuyển cho mã ' + skuSel, fmt:v => v ? '<span class="tag ' + (v.indexOf('🔥')>=0 ? 'bad' : v.indexOf('✔')>=0 ? 'ok' : 'warn') + '">' + esc(v) + '</span>' : '' }
       ],
       def: { k:'sq', dir:'desc' }, rowF:'store', rowV:g => g.key, tool:false, csv:true, file:'Chi_tiet_SKU_' + skuSel, maxH:340 });
-    det = '<div style="height:14px"></div>' + card('Chi tiết phân bổ & Điều chuyển SKU: ' + esc(skuSel), p ? esc(p.brand + ' · ' + p.line + ' · ' + (S.F.program && p.progPromo && p.progPromo[S.F.program] ? p.progPromo[S.F.program].label : p.promoLabels.join(' / '))) : 'Không có trong Dim_Product', td,
+    det = '<div style="height:14px"></div>' + card('Chi tiết phân bổ & Điều chuyển SKU: ' + esc(skuSel), p ? esc(p.brand + ' · ' + p.line + ' · ' + (fOne(S.F,'program') && p.progPromo && p.progPromo[fOne(S.F,'program')] ? p.progPromo[fOne(S.F,'program')].label : p.promoLabels.join(' / '))) : 'Không có trong Dim_Product', td,
       '<button class="btn dark" data-act="pickSku" data-v="' + esc(skuSel) + '">✕ Đóng chi tiết SKU</button>');
   }
   return alertCards + det + (det ? '<div style="height:14px"></div>' : '') + card(' Trung tâm Cảnh báo & Điều chuyển SKU', 'Bấm vào các thẻ cảnh báo phía trên để lọc nhanh · Bấm vào 1 dòng mã SP để xem cửa hàng nào nên xuất / cửa hàng nào nên nhận', main, viewSel);
+}
+
+
+/* ---------- Trang Thiết lập Định mức & Kế hoạch Điều chuyển (Admin) ---------- */
+const TR_GH_FILE = 'transfer_targets.json';
+function trProgKey(){ return S.tr.prog || '__ALL__'; }
+function trStorageKey(){ return 'dash_tr_cfg_v1_' + trProgKey(); }
+
+function trSaveLocal(){
+  try {
+    const k = trProgKey();
+    const all = JSON.parse(localStorage.getItem('dash_tr_all_v1') || '{}');
+    all[k] = { targets: S.tr.targets, pcts: S.tr.pcts, bulkTotal: S.tr.bulkTotal };
+    localStorage.setItem('dash_tr_all_v1', JSON.stringify(all));
+  } catch (e) {}
+}
+function trLoadSaved(){
+  try {
+    const all = JSON.parse(localStorage.getItem('dash_tr_all_v1') || '{}');
+    const cur = all[trProgKey()];
+    if (cur) {
+      S.tr.targets = cur.targets || {};
+      S.tr.pcts = cur.pcts || {};
+      if (cur.bulkTotal != null) S.tr.bulkTotal = cur.bulkTotal;
+      return;
+    }
+  } catch (e) {}
+  S.tr.targets = {};
+  S.tr.pcts = {};
+}
+async function trFetchFromGithub(){
+  try {
+    const res = await fetch('./' + TR_GH_FILE + '?_=' + Date.now(), { cache: 'no-store' });
+    if (!res.ok) return;
+    const d = await res.json();
+    if (d && typeof d === 'object') {
+      const local = JSON.parse(localStorage.getItem('dash_tr_all_v1') || '{}');
+      const merged = Object.assign({}, d, local);
+      localStorage.setItem('dash_tr_all_v1', JSON.stringify(merged));
+    }
+  } catch (e) {}
+}
+async function trPushTargetsToGithub(){
+  trSaveLocal();
+  const c = getGhCfg();
+  if (!c.owner || !c.repo || !c.token) { toast('Chưa cấu hình GitHub Token — hãy bấm nút ☁ GitHub trước!', true); return; }
+  try {
+    const all = JSON.parse(localStorage.getItem('dash_tr_all_v1') || '{}');
+    const dir = c.path.includes('/') ? c.path.slice(0, c.path.lastIndexOf('/') + 1) : '';
+    const pEnc = (dir + TR_GH_FILE).split('/').map(encodeURIComponent).join('/');
+    const url = 'https://api.github.com/repos/' + encodeURIComponent(c.owner) + '/' + encodeURIComponent(c.repo) + '/contents/' + pEnc;
+    const headers = { 'Authorization': 'Bearer ' + c.token, 'Accept': 'application/vnd.github+json', 'Content-Type': 'application/json' };
+    let sha = undefined;
+    const gRes = await fetch(url + '?ref=' + encodeURIComponent(c.branch) + '&_=' + Date.now(), { headers });
+    if (gRes.ok) sha = (await gRes.json()).sha;
+    const b64 = btoa(unescape(encodeURIComponent(JSON.stringify(all, null, 2))));
+    const payload = { message: 'Cập nhật định mức điều chuyển từ Web', content: b64, branch: c.branch };
+    if (sha) payload.sha = sha;
+    const pRes = await fetch(url, { method: 'PUT', headers, body: JSON.stringify(payload) });
+    if (!pRes.ok) throw new Error('HTTP ' + pRes.status);
+    toast('☁ Đã lưu cấu hình Định mức điều chuyển lên GitHub!');
+  } catch (e) {
+    toast('Lưu định mức lên GitHub lỗi: ' + e.message, true);
+  }
+}
+
+function trGetContext(){
+  const M = S.M;
+  const progs = M.opts.program.filter(x => x !== NA_DM);
+  if (!S.tr.prog && progs.length) {
+    const fP = fOne(S.F, 'program');
+    S.tr.prog = (fP && progs.includes(fP)) ? fP : (progs.length === 1 ? progs[0] : '');
+    trLoadSaved();
+  }
+  const prog = S.tr.prog;
+  // Tồn kho & bán hàng thuộc chương trình đang set
+  const invProg = prog
+    ? M.inv.filter(r => r.programs && r.programs.indexOf(prog) >= 0).map(r => resolveRowPromo(r, prog, M.invUnitPrice))
+    : M.inv;
+  const salProg = prog
+    ? M.sal.filter(r => r.programs && r.programs.indexOf(prog) >= 0).map(r => resolveRowPromo(r, prog, M.invUnitPrice))
+    : M.sal;
+
+  // Danh sách mức ưu đãi có trong chương trình (từ Dim_Product + Tồn kho)
+  const discSet = new Set();
+  M.prods.forEach(p => {
+    if (!prog || (p.programs && p.programs.indexOf(prog) >= 0)) {
+      const pr = (prog && p.progPromo && p.progPromo[prog]) ? p.progPromo[prog] : p.promo;
+      if (pr && pr.label) discSet.add(pr.label);
+    }
+  });
+  invProg.forEach(r => { if (r.disc) discSet.add(r.disc); });
+  const discs = Array.from(discSet).sort((a,b) => (M.promoSortMap.get(a) || 999999) - (M.promoSortMap.get(b) || 999999) || a.localeCompare(b, 'vi'));
+
+  // Danh sách cửa hàng đích theo phạm vi chọn
+  const isDc = s => String(s.code) === '1011' || nk(s.region) === 'dc' || nk(s.name).startsWith('dc');
+  const isSaleStore = s => !isDc(s) && nk(s.klass).includes('co') && !nk(s.klass).includes('khong');
+  let targetStores = Array.from(M.geo.values()).filter(s => !isDc(s));
+  if (S.tr.scope === 'sale') {
+    const saleList = targetStores.filter(isSaleStore);
+    if (saleList.length) targetStores = saleList;
+  } else if (S.tr.scope === 'filtered') {
+    const aA = fArr(S.F,'asm'), aP = fArr(S.F,'province'), aS = fArr(S.F,'store'), aK = fArr(S.F,'klass');
+    targetStores = targetStores.filter(s => (!aA.length || aA.includes(s.asm)) && (!aP.length || aP.includes(s.province)) && (!aS.length || aS.includes(s.code)) && (!aK.length || aK.includes(s.klass)));
+  }
+  targetStores.sort((a,b) => (a.asm || '').localeCompare(b.asm || '', 'vi') || a.name.localeCompare(b.name, 'vi'));
+
+  // Tính tồn hiện tại theo (store × disc)
+  const curStock = {};
+  invProg.forEach(r => {
+    const k = r.store + '\u0001' + r.disc;
+    curStock[k] = (curStock[k] || 0) + r.qty;
+  });
+  return { prog, progs, discs, targetStores, invProg, salProg, curStock, isDc, isSaleStore };
+}
+
+function trDistributeByPct(total, discs, pcts){
+  const res = {};
+  const weights = discs.map(d => Math.max(0, parseFloat(pcts[d]) || 0));
+  const sumW = weights.reduce((a,b) => a + b, 0);
+  if (!total || sumW <= 0) { discs.forEach(d => res[d] = 0); return res; }
+  const exact = discs.map((d, i) => ({ d, raw: total * weights[i] / sumW }));
+  let used = 0;
+  exact.forEach(x => { x.fl = Math.floor(x.raw); x.rem = x.raw - x.fl; used += x.fl; });
+  exact.sort((a,b) => b.rem - a.rem);
+  for (let i = 0; i < total - used; i++) exact[i % exact.length].fl++;
+  exact.forEach(x => { res[x.d] = x.fl; });
+  return res;
+}
+
+function trSetCell(st, disc, val){
+  if (!S.tr.targets[st]) S.tr.targets[st] = {};
+  S.tr.targets[st][disc] = val;
+  trSaveLocal();
+  renderPage();
+}
+function trSetStoreTotal(st, total){
+  const cx = trGetContext();
+  const dist = trDistributeByPct(total, cx.discs, S.tr.pcts);
+  S.tr.targets[st] = dist;
+  trSaveLocal();
+  renderPage();
+}
+function trApplyPctToAll(){
+  const cx = trGetContext();
+  const sumP = cx.discs.reduce((a, d) => a + (parseFloat(S.tr.pcts[d]) || 0), 0);
+  if (sumP <= 0) { toast('Vui lòng nhập tỷ lệ % cho ít nhất 1 nhóm ưu đãi trước!', true); return; }
+  const tot = Math.max(0, parseInt(S.tr.bulkTotal, 10) || 0);
+  cx.targetStores.forEach(s => {
+    const curTot = cx.discs.reduce((a, d) => a + ((S.tr.targets[s.code] && S.tr.targets[s.code][d]) || 0), 0);
+    const useTot = tot > 0 ? tot : curTot;
+    S.tr.targets[s.code] = trDistributeByPct(useTot, cx.discs, S.tr.pcts);
+  });
+  trSaveLocal();
+  toast('Đã chia định mức cho ' + cx.targetStores.length + ' cửa hàng theo tỷ lệ %!');
+  renderPage();
+}
+function trApplyBulkCol(disc){
+  const inp = document.querySelector('input[data-bulkcol="' + disc.replace(/"/g, '\"') + '"]');
+  const val = Math.max(0, parseInt(inp ? inp.value : 0, 10) || 0);
+  const cx = trGetContext();
+  cx.targetStores.forEach(s => {
+    if (!S.tr.targets[s.code]) S.tr.targets[s.code] = {};
+    S.tr.targets[s.code][disc] = val;
+  });
+  trSaveLocal();
+  toast('Đã set ' + val + ' món nhóm "' + disc + '" cho ' + cx.targetStores.length + ' CH');
+  renderPage();
+}
+function trClearTargets(){
+  S.tr.targets = {};
+  trSaveLocal();
+  toast('Đã xóa toàn bộ định mức của chương trình hiện tại');
+  renderPage();
+}
+
+function buildTransferPlan(cx){
+  const M = S.M;
+  const targetCodes = new Set(cx.targetStores.map(s => s.code));
+  // Tổng hợp nhu cầu (thiếu) & tồn mục tiêu theo (CH × Mức ưu đãi)
+  const summaryRows = [];
+  const needMap = new Map(); // key: st + \u0001 + disc -> { st, disc, cur, tgt, gap, planned }
+  cx.targetStores.forEach(s => {
+    cx.discs.forEach(d => {
+      const tgt = (S.tr.targets[s.code] && S.tr.targets[s.code][d]) || 0;
+      const cur = cx.curStock[s.code + '\u0001' + d] || 0;
+      if (tgt === 0 && cur === 0) return;
+      const row = { st: s.code, stName: s.name, asm: s.asm, prov: s.province, disc: d, cur, tgt, gap: cur - tgt, need: Math.max(0, tgt - cur), surplus: Math.max(0, cur - tgt), plannedIn: 0, plannedOut: 0 };
+      summaryRows.push(row);
+      needMap.set(s.code + '\u0001' + d, row);
+    });
+  });
+
+  // Tính tốc độ bán từng (store × sku) để không rút nhầm hàng đang bán chạy
+  const soldByStSku = {};
+  cx.salProg.forEach(r => { const k = r.store + '\u0001' + r.sku; soldByStSku[k] = (soldByStSku[k] || 0) + r.qty; });
+
+  // Tập SKU đã có tồn ở từng CH đích để ưu tiên chuyển mã CH đích CHƯA có
+  const destHasSku = {};
+  cx.invProg.forEach(r => { if (r.qty > 0) (destHasSku[r.store] = destHasSku[r.store] || new Set()).add(r.sku); });
+
+  // Xây dựng bể nguồn hàng có thể rút (theo từng mức ưu đãi)
+  // Nguồn 1: Kho DC (1011) | Nguồn 2: CH Không chạy Sale | Nguồn 3: CH Đích đang dư vượt định mức
+  const poolByDisc = {};
+  const srcAvailQuota = {}; // giới hạn tổng SL được rút của 1 CH đích dư theo (store + \u0001 + disc)
+  summaryRows.forEach(r => { if (r.surplus > 0) srcAvailQuota[r.st + '\u0001' + r.disc] = r.surplus; });
+
+  cx.invProg.forEach(r => {
+    if (r.qty <= 0) return;
+    const s = M.geo.get(r.store) || { code: r.store, name: r.storeName, asm: r.asm, province: r.province, region: r.region, klass: r.klass };
+    let prio = 0, prioLabel = '';
+    if (cx.isDc(s)) {
+      if (!S.tr.srcDc) return;
+      prio = 1; prioLabel = '1. Kho DC';
+    } else if (!targetCodes.has(r.store)) {
+      if (!S.tr.srcNonSale) return;
+      prio = 2; prioLabel = '2. CH Không chạy Sale';
+    } else {
+      if (!S.tr.srcSurplus) return;
+      if (!(srcAvailQuota[r.store + '\u0001' + r.disc] > 0)) return;
+      prio = 3; prioLabel = '3. CH chạy Sale (Dư định mức)';
+    }
+    const sold = soldByStSku[r.store + '\u0001' + r.sku] || 0;
+    (poolByDisc[r.disc] = poolByDisc[r.disc] || []).push({
+      store: r.store, stName: s.name, asm: s.asm, prov: s.province,
+      sku: r.sku, brand: r.brand, line: r.line, disc: r.disc,
+      avail: r.qty, unitCost: r.qty > 0 ? r.cost / r.qty : 0,
+      prio, prioLabel, sold, isTargetStore: targetCodes.has(r.store)
+    });
+  });
+
+  // Khớp lệnh điều chuyển: ưu tiên CH thiếu nhiều trước
+  const plan = [];
+  const shortages = summaryRows.filter(r => r.need > 0).sort((a,b) => b.need - a.need);
+  shortages.forEach(sh => {
+    let rem = sh.need;
+    const pool = poolByDisc[sh.disc] || [];
+    const dSet = destHasSku[sh.st] || (destHasSku[sh.st] = new Set());
+    // Chấm điểm từng nguồn cho CH đích hiện tại
+    const ranked = pool.filter(p => p.store !== sh.st && p.avail > 0).sort((a,b) => {
+      if (a.prio !== b.prio) return a.prio - b.prio;
+      // Ưu tiên cùng Tỉnh -> cùng ASM -> khác ASM
+      const gA = a.prov === sh.prov ? 0 : (a.asm === sh.asm ? 1 : 2);
+      const gB = b.prov === sh.prov ? 0 : (b.asm === sh.asm ? 1 : 2);
+      if (gA !== gB) return gA - gB;
+      // Ưu tiên mã CH đích CHƯA có tồn
+      const dupA = dSet.has(a.sku) ? 1 : 0, dupB = dSet.has(b.sku) ? 1 : 0;
+      if (dupA !== dupB) return dupA - dupB;
+      // Ưu tiên rút mã chưa bán được / tồn dày ở CH nguồn
+      if (a.sold !== b.sold) return a.sold - b.sold;
+      return b.avail - a.avail;
+    });
+
+    for (let i = 0; i < ranked.length && rem > 0; i++) {
+      const src = ranked[i];
+      let maxTake = src.avail;
+      if (src.isTargetStore) {
+        const qKey = src.store + '\u0001' + src.disc;
+        maxTake = Math.min(maxTake, srcAvailQuota[qKey] || 0);
+      }
+      if (maxTake <= 0) continue;
+      // Ưu tiên chuyển 1 món/mã trước nếu còn nhiều mã khác nhau để đa dạng mẫu, trừ kho DC
+      const take = Math.min(rem, maxTake);
+      src.avail -= take;
+      if (src.isTargetStore) {
+        const qKey = src.store + '\u0001' + src.disc;
+        srcAvailQuota[qKey] -= take;
+        const srcRow = needMap.get(qKey);
+        if (srcRow) srcRow.plannedOut += take;
+      }
+      rem -= take;
+      sh.plannedIn += take;
+      dSet.add(src.sku);
+      const geoNote = src.prio === 1 ? 'Kho DC' : (src.prov === sh.prov ? 'Cùng Tỉnh' : (src.asm === sh.asm ? 'Cùng ASM' : 'Liên khu vực'));
+      plan.push({
+        fromSt: src.store, fromName: src.stName, fromAsm: src.asm,
+        toSt: sh.st, toName: sh.stName, toAsm: sh.asm,
+        prog: cx.prog || 'Tất cả', disc: sh.disc,
+        sku: src.sku, brand: src.brand, line: src.line,
+        qty: take, cost: Math.round(src.unitCost * take),
+        reason: src.prioLabel + ' · ' + geoNote
+      });
+    }
+  });
+
+  const totTgt = summaryRows.reduce((a,r) => a + r.tgt, 0);
+  const totCur = summaryRows.reduce((a,r) => a + r.cur, 0);
+  const totNeed = summaryRows.reduce((a,r) => a + r.need, 0);
+  const totPlanned = plan.reduce((a,r) => a + r.qty, 0);
+  const totRemain = Math.max(0, totNeed - totPlanned);
+  return { summaryRows, plan, totTgt, totCur, totNeed, totPlanned, totRemain };
+}
+
+function trDownloadTargetTemplate(){
+  if (typeof XLSX === 'undefined') return toast('Chưa tải được thư viện Excel', true);
+  const cx = trGetContext();
+  const header = ['Mã CH', 'Tên Cửa Hàng', 'ASM', 'Tỉnh'].concat(cx.discs);
+  const rows = [header].concat(cx.targetStores.map(s => [
+    /^\d+$/.test(s.code) ? Number(s.code) : s.code, s.name, s.asm, s.province
+  ].concat(cx.discs.map(d => (S.tr.targets[s.code] && S.tr.targets[s.code][d]) || 0))));
+  const wb = XLSX.utils.book_new();
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(rows), 'Dinh_Muc_Ton');
+  XLSX.writeFile(wb, 'Mau_Dinh_Muc_Dieu_Chuyen.xlsx');
+  toast('Đã tải file Mau_Dinh_Muc_Dieu_Chuyen.xlsx — bạn nhập số món rồi nạp lại!');
+}
+
+async function trImportTargetExcel(file){
+  if (typeof XLSX === 'undefined') return toast('Chưa tải được thư viện Excel', true);
+  try {
+    const buf = await file.arrayBuffer();
+    const wb = XLSX.read(buf, { type: 'array' });
+    const ws = wb.Sheets[wb.SheetNames[0]];
+    const rows = XLSX.utils.sheet_to_json(ws, { header: 1, defval: '' });
+    if (rows.length < 2) throw new Error('File không có dữ liệu');
+    const hdr = rows[0].map(str);
+    const cx = trGetContext();
+    const codeIdx = hdr.findIndex(h => ['mach','macuahang','store','mastore'].includes(nk(h)));
+    if (codeIdx < 0) throw new Error('Không tìm thấy cột Mã CH');
+    const discCols = [];
+    hdr.forEach((h, i) => {
+      if (i === codeIdx) return;
+      const matched = cx.discs.find(d => nk(d) === nk(h) || nk(parsePromo(h).label) === nk(d));
+      if (matched) discCols.push({ i, disc: matched });
+    });
+    if (!discCols.length) throw new Error('Không tìm thấy cột mức ưu đãi nào khớp với chương trình hiện tại');
+    let cnt = 0;
+    for (let r = 1; r < rows.length; r++) {
+      const code = cleanCode(rows[r][codeIdx]);
+      if (!code) continue;
+      if (!S.tr.targets[code]) S.tr.targets[code] = {};
+      discCols.forEach(c => {
+        const v = Math.max(0, Math.round(parseNum(rows[r][c.i]) || 0));
+        S.tr.targets[code][c.disc] = v;
+      });
+      cnt++;
+    }
+    trSaveLocal();
+    toast('✔ Đã nạp định mức từ Excel cho ' + cnt + ' cửa hàng (' + discCols.length + ' nhóm ưu đãi)!');
+    renderPage();
+  } catch (e) {
+    toast('Nạp Excel định mức lỗi: ' + e.message, true);
+  }
+}
+
+function trExportPlanExcel(){
+  if (typeof XLSX === 'undefined') return toast('Chưa tải được thư viện Excel', true);
+  const cx = trGetContext();
+  const res = buildTransferPlan(cx);
+  if (!res.plan.length && !res.summaryRows.length) return toast('Chưa có dữ liệu định mức để xuất', true);
+  const wb = XLSX.utils.book_new();
+  const s1 = [['CH Xuất', 'Tên CH Xuất', 'ASM Xuất', 'CH Nhận', 'Tên CH Nhận', 'ASM Nhận', 'Chương trình', 'Mức ưu đãi', 'Mã SP (SKU)', 'Nhãn hàng', 'Dòng hàng', 'SL điều chuyển', 'Vốn tồn ước tính', 'Nguồn ưu tiên']].concat(
+    res.plan.map(r => [r.fromSt, r.fromName, r.fromAsm, r.toSt, r.toName, r.toAsm, r.prog, r.disc, r.sku, r.brand, r.line, r.qty, r.cost, r.reason])
+  );
+  const s2 = [['Mã CH', 'Tên Cửa Hàng', 'ASM', 'Tỉnh', 'Mức ưu đãi', 'Tồn hiện tại', 'Định mức mục tiêu', 'Thiếu', 'Dư', 'Đã ghép nhận', 'Đã ghép xuất', 'Còn thiếu sau ĐC']].concat(
+    res.summaryRows.map(r => [r.st, r.stName, r.asm, r.prov, r.disc, r.cur, r.tgt, r.need, r.surplus, r.plannedIn, r.plannedOut, Math.max(0, r.need - r.plannedIn)])
+  );
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(s1), 'Lenh_Dieu_Chuyen_SKU');
+  XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(s2), 'Tong_Hop_Thieu_Du');
+  XLSX.writeFile(wb, 'Ke_Hoach_Dieu_Chuyen_' + (cx.prog ? nk(cx.prog) : 'Sale') + '.xlsx');
+  toast('✔ Đã xuất file Excel Kế hoạch Điều chuyển (' + res.plan.length + ' dòng SKU)!');
+}
+
+function pageTransfer(){
+  const cx = trGetContext();
+  const res = buildTransferPlan(cx);
+  const sumPct = cx.discs.reduce((a, d) => a + (parseFloat(S.tr.pcts[d]) || 0), 0);
+
+  const ctrlHtml =
+    '<div class="tr-ctrl">' +
+      '<div class="fg"><label>Chương trình lập kế hoạch</label>' +
+        '<select data-act="trProg">' +
+          '<option value="">Tất cả chương trình</option>' +
+          cx.progs.map(p => '<option value="' + esc(p) + '"' + (cx.prog === p ? ' selected' : '') + '>' + esc(p) + '</option>').join('') +
+        '</select>' +
+      '</div>' +
+      '<div class="fg"><label>Phạm vi CH mục tiêu</label>' +
+        '<select data-act="trScope">' +
+          '<option value="sale"' + (S.tr.scope === 'sale' ? ' selected' : '') + '>Chỉ CH Có Chạy Sale</option>' +
+          '<option value="all"' + (S.tr.scope === 'all' ? ' selected' : '') + '>Tất cả CH (trừ DC)</option>' +
+          '<option value="filtered"' + (S.tr.scope === 'filtered' ? ' selected' : '') + '>Theo bộ lọc hiện tại</option>' +
+        '</select>' +
+      '</div>' +
+      '<div class="fg"><label>Cách nhập định mức</label>' +
+        '<select data-act="trMode">' +
+          '<option value="pct"' + (S.tr.mode === 'pct' ? ' selected' : '') + '>Theo Tổng tồn CH + Tỷ lệ % nhóm</option>' +
+          '<option value="matrix"' + (S.tr.mode === 'matrix' ? ' selected' : '') + '>Nhập trực tiếp từng ô (CH × Mức ưu đãi)</option>' +
+        '</select>' +
+      '</div>' +
+      '<div class="fg" style="flex:1;min-width:240px"><label>Nguồn rút hàng bổ sung (theo thứ tự ưu tiên)</label>' +
+        '<div class="tr-src">' +
+          '<label><input type="checkbox" data-act="trSrc" data-k="srcDc"' + (S.tr.srcDc ? ' checked' : '') + '> 1. Kho DC</label>' +
+          '<label><input type="checkbox" data-act="trSrc" data-k="srcNonSale"' + (S.tr.srcNonSale ? ' checked' : '') + '> 2. CH Không chạy Sale</label>' +
+          '<label><input type="checkbox" data-act="trSrc" data-k="srcSurplus"' + (S.tr.srcSurplus ? ' checked' : '') + '> 3. CH chạy Sale dư định mức</label>' +
+        '</div>' +
+      '</div>' +
+      '<div style="display:flex;gap:6px;flex-wrap:wrap">' +
+        '<input type="file" id="trFileIn" accept=".xlsx,.xls,.csv" style="display:none">' +
+        '<button type="button" class="btn ghost" data-act="trDlTpl">⬇ Mẫu Excel ĐM</button>' +
+        '<button type="button" class="btn ghost" data-act="trUpTpl">⬆ Nạp Excel ĐM</button>' +
+        '<button type="button" class="btn ghost" data-act="trPushGh">☁ Lưu lên GitHub</button>' +
+        '<button type="button" class="btn ghost" data-act="trClearTgt" style="color:var(--red)">✕ Xóa ĐM</button>' +
+        '<button type="button" class="btn primary" data-act="trExportPlan">⬇ Xuất Lệnh Điều chuyển (.xlsx)</button>' +
+      '</div>' +
+    '</div>';
+
+  const kpis = '<div class="kgrid">' +
+    kpi('Tổng định mức mục tiêu', fmtQty(res.totTgt) + ' SP', 'Trên <b>' + cx.targetStores.length + '</b> CH · <b>' + cx.discs.length + '</b> mức ưu đãi') +
+    kpi('Tồn hiện tại tại CH đích', fmtQty(res.totCur) + ' SP', 'Đạt <b>' + (res.totTgt ? fmtPct(res.totCur / res.totTgt) : '—') + '</b> so với mục tiêu') +
+    kpi('Tổng SL đang Thiếu', fmtQty(res.totNeed) + ' SP', 'Đã ghép điều chuyển được <b>' + fmtQty(res.totPlanned) + '</b> SP') +
+    kpi('Còn thiếu chưa đủ nguồn', fmtQty(res.totRemain) + ' SP', res.totRemain > 0 ? 'Cần xin thêm hàng từ Công ty / Miền' : '✔ Đủ nguồn nội bộ Miền Tây') +
+  '</div>';
+
+  // Thanh set tỷ lệ % nếu đang ở chế độ pct
+  let pctBar = '';
+  if (S.tr.mode === 'pct') {
+    pctBar = '<div class="tr-pct-bar">' +
+      '<b style="color:var(--navy);font-size:12px">Tỷ lệ % cơ cấu từng mức ưu đãi:</b>' +
+      cx.discs.map(d => '<div class="tr-pct-item"><b>' + esc(d) + '</b><input type="number" min="0" max="100" step="1" data-act="trPct" data-disc="' + esc(d) + '" value="' + (S.tr.pcts[d] || 0) + '">%</div>').join('') +
+      '<span class="tag ' + (Math.round(sumPct) === 100 ? 'ok' : (sumPct > 0 ? 'warn' : 'bad')) + '">Tổng: ' + dec(sumPct, 0) + '%</span>' +
+      '<div style="display:flex;align-items:center;gap:6px;margin-left:auto">' +
+        '<span style="font-size:11.5px;color:var(--navy);font-weight:600">Set nhanh mỗi CH:</span>' +
+        '<input type="number" min="0" step="1" data-act="trBulkTot" value="' + (S.tr.bulkTotal || 0) + '" style="width:62px;height:27px;text-align:center;border:1px solid var(--line);border-radius:5px;font-weight:700">' +
+        '<button type="button" class="btn dark" style="padding:4px 10px" data-act="trApplyPct">Áp dụng cho ' + cx.targetStores.length + ' CH</button>' +
+      '</div>' +
+    '</div>';
+  }
+
+  // Bảng Ma trận nhập Định mức (CH × Mức ưu đãi)
+  let mxHtml = '<div class="tr-mx"><table class="tmx"><thead><tr>' +
+    '<th class="l">Cửa hàng (' + cx.targetStores.length + ')</th>' +
+    '<th>Tổng tồn / Mục tiêu</th>' +
+    cx.discs.map(d => '<th>' + esc(d) + '</th>').join('') +
+    '</tr>';
+  if (S.tr.mode === 'matrix') {
+    mxHtml += '<tr class="bulk-row"><th class="l">⚡ Áp nhanh toàn cột →</th><th>—</th>' +
+      cx.discs.map(d => '<th><input type="number" min="0" step="1" class="t-inp" data-bulkcol="' + esc(d) + '" placeholder="SL" style="width:48px"> <button type="button" class="btn dark" style="padding:2px 6px;font-size:10px" data-act="trBulkCol" data-disc="' + esc(d) + '">Áp</button></th>').join('') +
+      '</tr>';
+  }
+  mxHtml += '</thead><tbody>' + cx.targetStores.map(s => {
+    const stCur = cx.discs.reduce((a, d) => a + (cx.curStock[s.code + '\u0001' + d] || 0), 0);
+    const stTgt = cx.discs.reduce((a, d) => a + ((S.tr.targets[s.code] && S.tr.targets[s.code][d]) || 0), 0);
+    const stGap = stCur - stTgt;
+    const totCell = S.tr.mode === 'pct'
+      ? '<div class="t-cell"><input type="number" min="0" step="1" class="t-inp" data-act="trStTot" data-st="' + esc(s.code) + '" value="' + stTgt + '"><span class="t-sub">Tồn ' + stCur + ' (' + (stGap < 0 ? '<span class="t-gap-neg">' + stGap + '</span>' : '<span class="t-gap-pos">+' + stGap + '</span>') + ')</span></div>'
+      : '<div class="t-cell"><b>' + stCur + ' / ' + stTgt + '</b><span class="t-sub">' + (stGap < 0 ? '<span class="t-gap-neg">Thiếu ' + (-stGap) + '</span>' : '<span class="t-gap-pos">Dư +' + stGap + '</span>') + '</span></div>';
+    return '<tr><td class="l" title="' + esc(s.code + ' · ' + s.name + ' (' + s.asm + ')') + '">' + esc(s.code + ' · ' + s.name) + '<div class="t-sub">' + esc(s.asm + ' · ' + s.province) + '</div></td>' +
+      '<td>' + totCell + '</td>' +
+      cx.discs.map(d => {
+        const cur = cx.curStock[s.code + '\u0001' + d] || 0;
+        const tgt = (S.tr.targets[s.code] && S.tr.targets[s.code][d]) || 0;
+        const gap = cur - tgt;
+        return '<td><div class="t-cell"><input type="number" min="0" step="1" class="t-inp" data-act="trCell" data-st="' + esc(s.code) + '" data-disc="' + esc(d) + '" value="' + tgt + '">' +
+          '<span class="t-sub">Tồn ' + cur + (tgt > 0 ? ' · ' + (gap < 0 ? '<span class="t-gap-neg">' + gap + '</span>' : '<span class="t-gap-pos">+' + gap + '</span>') : '') + '</span></div></td>';
+      }).join('') + '</tr>';
+  }).join('') + '</tbody></table></div>';
+
+  // Bảng 1: Tổng hợp Thiếu / Dư
+  const tSum = tbl('tr_sum', {
+    rows: res.summaryRows.filter(r => r.tgt > 0 || r.cur > 0),
+    cols: [
+      { k:'st', l:'Mã CH' }, { k:'stName', l:'Tên Cửa Hàng' }, { k:'asm', l:'ASM' }, { k:'disc', l:'Mức ưu đãi' },
+      { k:'cur', l:'Tồn hiện tại', r:1, fmt:fmtFull }, { k:'tgt', l:'Mục tiêu', r:1, fmt:fmtFull },
+      { k:'need', l:'Thiếu', r:1, fmt:v => v > 0 ? '<span class="tag bad">-' + fmtFull(v) + '</span>' : '—' },
+      { k:'surplus', l:'Dư', r:1, fmt:v => v > 0 ? '<span class="tag ok">+' + fmtFull(v) + '</span>' : '—' },
+      { k:'plannedIn', l:'Đã ghép nhận', r:1, fmt:v => v > 0 ? '<span class="tag info">+' + fmtFull(v) + '</span>' : '—' },
+      { k:'plannedOut', l:'Đã ghép xuất', r:1, fmt:v => v > 0 ? '<span class="tag warn">-' + fmtFull(v) + '</span>' : '—' }
+    ],
+    def: { k:'need', dir:'desc' }, searchFn: r => r.st + ' ' + r.stName + ' ' + r.asm + ' ' + r.disc, pageSize: 15, maxH: 380, file: 'Tong_hop_thieu_du_dieu_chuyen'
+  });
+
+  // Bảng 2: Lệnh Điều chuyển chi tiết theo SKU
+  const tPlan = tbl('tr_plan', {
+    rows: res.plan,
+    cols: [
+      { k:'fromSt', l:'CH Xuất' }, { k:'fromName', l:'Tên CH Xuất' },
+      { k:'toSt', l:'CH Nhận' }, { k:'toName', l:'Tên CH Nhận' },
+      { k:'disc', l:'Mức ưu đãi' }, { k:'sku', l:'Mã SP (SKU)' },
+      { k:'brand', l:'Nhãn' }, { k:'line', l:'Dòng' },
+      { k:'qty', l:'SL chuyển', r:1, fmt:v => '<span class="tag info">' + fmtFull(v) + '</span>' },
+      { k:'cost', l:'Vốn tồn', r:1, fmt:fmtFull },
+      { k:'reason', l:'Nguồn ưu tiên' }
+    ],
+    def: { k:'qty', dir:'desc' }, searchFn: r => r.fromSt + ' ' + r.fromName + ' ' + r.toSt + ' ' + r.toName + ' ' + r.sku + ' ' + r.disc, pageSize: 20, maxH: 440, file: 'Lenh_dieu_chuyen_SKU'
+  });
+
+  return ctrlHtml + kpis +
+    card('Bước 1: Thiết lập Định mức Tồn theo Cửa hàng × Mức ưu đãi', 'Nhập trực tiếp số món vào từng ô, hoặc set tỷ lệ % nhóm + tổng số món từng CH, hoặc nạp từ file Excel mẫu.', pctBar + mxHtml) +
+    '<div style="height:14px"></div>' +
+    card('Bước 2: Lệnh Điều chuyển đề xuất chi tiết đến từng Mã SP (' + fmtQty(res.plan.length) + ' dòng · ' + fmtQty(res.totPlanned) + ' SP)', 'Tự động ưu tiên rút từ Kho DC → CH Không chạy Sale → CH dư vượt định mức (ưu tiên cùng Tỉnh/ASM và tránh trùng mã đã có ở CH nhận).', tPlan) +
+    '<div style="height:14px"></div>' +
+    card('Tổng hợp Thiếu / Dư theo Cửa hàng × Mức ưu đãi', 'Đối chiếu tồn hiện tại, mục tiêu và lượng đã ghép điều chuyển.', tSum);
 }
 
 function pageDq(){
@@ -1822,41 +2386,164 @@ function pageDq(){
     '<div>' + card('Trạng thái dữ liệu', 'Thời điểm nạp từng bảng', lt) + '<div style="height:14px"></div>' + card('Thông tin tham khảo', '', info) +
     '<div style="height:14px"></div>' + card('Quy ước tính toán', '', '<ul style="margin:0;padding-left:18px;line-height:1.7"><li><b>Sell-through</b> = SL bán ÷ (SL bán + SL tồn hiện tại).</li><li><b>Days of cover</b> = SL tồn ÷ (SL bán ÷ số ngày có dữ liệu bán).</li><li><b>Mức ưu đãi (Cột F Dim_Product):</b> Tự nhận diện 4 hình thức — <i>Giảm theo %</i> (vd: 30%, 0.3), <i>Đồng giá</i> (vd: Đồng giá 999k, 1.5tr), <i>Giảm tiền cố định</i> (vd: Giảm 500k, -1tr) và <i>Ưu đãi khác</i> (vd: Mua 1 tặng 1).</li><li><b>Giá niêm yết &amp; % giảm bình quân:</b> Giảm % tính bằng <code>DT ÷ (1 − % giảm)</code>; Giảm tiền tính bằng <code>DT + Mức giảm × SL</code>; Đồng giá ưu tiên lấy theo Giá Bán ở tồn kho (nếu có), nếu không sẽ tách riêng để không làm lệch % giảm bình quân của nhóm giảm %.</li><li>Bộ lọc ngày chỉ áp dụng cho dữ liệu bán; Tồn kho là số hiện tại.</li><li>Khung giá tồn kho tính theo Giá Bán ÷ SL của từng dòng (nếu có).</li></ul>') + '</div></div>';
 }
-const PAGES = { overview: pageOverview, asm: pageAsm, store: pageStore, brand: pageBrand, sku: pageSku, dq: pageDq };
+const PAGES = { overview: pageOverview, asm: pageAsm, store: pageStore, brand: pageBrand, sku: pageSku, transfer: pageTransfer, dq: pageDq };
 
-/* ---------- Khung chung: bộ lọc, chip, điều hướng ---------- */
+/* ---------- Khung chung: bộ lọc đa chọn liên kết (Cascading Multi-Select), chip, điều hướng ---------- */
 const FLABEL = { program:'Chương trình', asm:'ASM', province:'Tỉnh', store:'CH', klass:'Phân loại CH', brand:'Nhãn', line:'Dòng hàng', promoGroup:'Loại ưu đãi', disc:'Mức ưu đãi', sku:'SKU' };
+const PROD_FKEYS = ['program','brand','line','promoGroup','disc','sku'];
+
+function getCascadedOpts(k){
+  const M = S.M, F = S.F;
+  const Fother = Object.assign({}, F); delete Fother[k];
+  const hasOther = FILTER_KEYS.some(x => x !== k && fArr(Fother, x).length > 0) || !!(Fother.dateFrom || Fother.dateTo);
+  const hasProdOther = PROD_FKEYS.some(x => x !== k && fArr(Fother, x).length > 0);
+  const pSelOther = fArr(Fother, 'program');
+  const set = new Set();
+
+  if (!hasOther) {
+    if (k === 'province') return uniqSorted(Array.from(M.geo.values()).map(s => s.province)).map(x => [x, x]);
+    if (k === 'store') return Array.from(M.geo.values()).sort((a,b) => a.name.localeCompare(b.name,'vi')).map(s => [s.code, s.code + ' · ' + s.name]);
+    return (M.opts[k] || []).map(x => [x, x]);
+  }
+
+  // Nếu là lọc địa lý và chưa lọc theo sản phẩm/ngày -> lấy từ M.geo để không mất CH chưa có phát sinh
+  if ((k === 'asm' || k === 'province' || k === 'store' || k === 'klass') && !hasProdOther && !Fother.dateFrom && !Fother.dateTo) {
+    const aA = fArr(Fother,'asm'), aP = fArr(Fother,'province'), aS = fArr(Fother,'store'), aK = fArr(Fother,'klass');
+    M.geo.forEach(s => {
+      if ((!aA.length || aA.indexOf(s.asm) >= 0) && (!aP.length || aP.indexOf(s.province) >= 0) && (!aS.length || aS.indexOf(s.code) >= 0) && (!aK.length || aK.indexOf(s.klass) >= 0)) {
+        set.add(k === 'store' ? s.code : s[k]);
+      }
+    });
+  } else {
+    const c = ctxX(k);
+    const rows = c.inv.concat(c.sal);
+    rows.forEach(r => {
+      if (k === 'program') {
+        (r.programs || []).forEach(p => set.add(p));
+      } else if (k === 'disc') {
+        if (pSelOther.length === 1) set.add(r.disc);
+        else if (pSelOther.length > 1 && r.progPromo) pSelOther.forEach(pr => { if (r.progPromo[pr]) set.add(r.progPromo[pr].label); });
+        else (r.promoLabels || [r.disc]).forEach(l => set.add(l));
+      } else if (k === 'promoGroup') {
+        if (pSelOther.length === 1) set.add(r.promoGroup);
+        else if (pSelOther.length > 1 && r.progPromo) pSelOther.forEach(pr => { if (r.progPromo[pr]) set.add(r.progPromo[pr].group); });
+        else (r.promoGroups || [r.promoGroup]).forEach(g => set.add(g));
+      } else if (r[k]) {
+        set.add(r[k]);
+      }
+    });
+  }
+
+  const arr = Array.from(set).filter(x => x !== '' && x != null);
+  if (k === 'store') {
+    return arr.map(code => {
+      const s = M.geo.get(code);
+      return [code, s ? (s.code + ' · ' + s.name) : code];
+    }).sort((a,b) => a[1].localeCompare(b[1], 'vi'));
+  }
+  const baseOrd = M.opts[k] || [];
+  arr.sort((a,b) => {
+    const ia = baseOrd.indexOf(a), ib = baseOrd.indexOf(b);
+    if (ia >= 0 && ib >= 0) return ia - ib;
+    return String(a).localeCompare(String(b), 'vi');
+  });
+  return arr.map(x => [x, x]);
+}
+
+function pruneInvalidFilters(changedKey){
+  if (!S.M) return;
+  FILTER_KEYS.forEach(k => {
+    if (k === changedKey) return;
+    const cur = fArr(S.F, k);
+    if (!cur.length) return;
+    const valid = new Set(getCascadedOpts(k).map(o => o[0]));
+    const kept = cur.filter(v => valid.has(v));
+    if (kept.length !== cur.length) {
+      if (kept.length) S.F[k] = kept; else delete S.F[k];
+    }
+  });
+}
+
 function renderFilters(){
   const M = S.M, F = S.F; if (!M) return;
-  const geo = Array.from(M.geo.values());
-  const provs = uniqSorted(geo.filter(s => !F.asm || s.asm === F.asm).map(s => s.province));
-  const stores = geo.filter(s => (!F.asm || s.asm === F.asm) && (!F.province || s.province === F.province)).sort((a, b) => a.name.localeCompare(b.name, 'vi'));
-  const sel = (k, label, opts) => {
-    if (F[k] && !opts.some(o => o[0] === F[k])) opts = opts.concat([[F[k], F[k]]]);
-    return '<div class="fl"><label>' + label + '</label><select data-fk="' + k + '" class="' + (F[k] ? 'act' : '') + '"><option value="">Tất cả</option>' + opts.map(o => '<option value="' + esc(o[0]) + '"' + (F[k] === o[0] ? ' selected' : '') + '>' + esc(o[1]) + '</option>').join('') + '</select></div>';
+  const msBox = (k, label, alignRight) => {
+    let opts = getCascadedOpts(k);
+    const sel = fArr(F, k);
+    sel.forEach(v => { if (!opts.some(o => o[0] === v)) opts.unshift([v, k === 'store' ? storeName(v) : v]); });
+    const q = (S.msQ[k] || '').trim();
+    const qn = nk(q);
+    const visOpts = qn ? opts.filter(o => nk(o[1]).includes(qn) || nk(o[0]).includes(qn)) : opts;
+    let btnTxt = 'Tất cả';
+    if (sel.length === 1) {
+      const hit = opts.find(o => o[0] === sel[0]);
+      btnTxt = hit ? hit[1] : sel[0];
+    } else if (sel.length > 1) {
+      btnTxt = 'Đã chọn ' + sel.length + '/' + opts.length;
+    }
+    const isOpen = S.openMs === k;
+    const tip = sel.length ? sel.map(v => k === 'store' ? storeName(v) : v).join(', ') : 'Chọn 1 hoặc nhiều ' + label.toLowerCase();
+    const listHtml = visOpts.length
+      ? visOpts.map(o => '<label class="ms-item" title="' + esc(o[1]) + '"><input type="checkbox" data-msk="' + k + '" value="' + esc(o[0]) + '"' + (sel.indexOf(o[0]) >= 0 ? ' checked' : '') + '><span>' + esc(o[1]) + '</span></label>').join('')
+      : '<div class="ms-empty">Không có mục phù hợp</div>';
+    return '<div class="fl"><label>' + label + '</label>' +
+      '<div class="ms' + (isOpen ? ' open' : '') + '" data-msbox="' + k + '">' +
+        '<button type="button" class="ms-btn' + (sel.length ? ' act' : '') + '" data-mstog="' + k + '" title="' + esc(tip) + '">' +
+          '<span class="ms-t">' + esc(btnTxt) + '</span><span class="ms-c">▾</span>' +
+        '</button>' +
+        '<div class="ms-pop' + (alignRight ? ' right' : '') + '">' +
+          (opts.length > 6 ? '<input type="text" class="ms-srch" data-mssrch="' + k + '" placeholder="🔍 Tìm nhanh (' + opts.length + ')…" value="' + esc(q) + '">' : '') +
+          '<div class="ms-bar">' +
+            '<button type="button" data-msall="' + k + '">✔ Chọn tất (' + visOpts.length + ')</button>' +
+            '<button type="button" data-msnone="' + k + '">✕ Bỏ chọn</button>' +
+          '</div>' +
+          '<div class="ms-list">' + listHtml + '</div>' +
+        '</div>' +
+      '</div></div>';
   };
-  const same = a => a.map(x => [x, x]);
   $('filters').innerHTML =
-    sel('program', 'Chương trình', same(M.opts.program)) + sel('asm', 'ASM', same(M.opts.asm)) + sel('province', 'Tỉnh', same(provs)) + sel('store', 'Cửa hàng', stores.map(s => [s.code, s.code + ' · ' + s.name])) +
-    sel('klass', 'Phân loại CH', same(M.opts.klass)) + sel('brand', 'Nhãn hàng', same(M.opts.brand)) + sel('line', 'Dòng hàng', same(M.opts.line)) + (M.opts.promoGroup.length > 1 ? sel('promoGroup', 'Loại ưu đãi', same(M.opts.promoGroup)) : '') + sel('disc', 'Mức ưu đãi', same(M.opts.disc)) +
+    msBox('program', 'Chương trình') + msBox('asm', 'ASM') + msBox('province', 'Tỉnh') + msBox('store', 'Cửa hàng') +
+    msBox('klass', 'Phân loại CH') + msBox('brand', 'Nhãn hàng') + msBox('line', 'Dòng hàng') +
+    (M.opts.promoGroup.length > 1 ? msBox('promoGroup', 'Loại ưu đãi', true) : '') +
+    msBox('disc', 'Mức ưu đãi', true) +
     '<div class="fl"><label>Bán từ ngày</label><input type="date" data-fk="dateFrom" class="' + (F.dateFrom ? 'act' : '') + '" value="' + (F.dateFrom || '') + '" min="' + (M.dMin || '') + '" max="' + (M.dMax || '') + '"></div>' +
     '<div class="fl"><label>Đến ngày</label><input type="date" data-fk="dateTo" class="' + (F.dateTo ? 'act' : '') + '" value="' + (F.dateTo || '') + '" min="' + (M.dMin || '') + '" max="' + (M.dMax || '') + '"></div>' +
     '<div class="fl"><label>Mục tiêu ST %</label><input type="number" class="tgt" min="1" max="100" step="1" value="' + S.target + '" data-act="target"></div>' +
     '<div class="grow"></div><button class="linkbtn" data-act="clear">✕ Xóa toàn bộ lọc</button>';
+  if (S.openMs) {
+    const srch = $('filters').querySelector('input[data-mssrch="' + S.openMs + '"]');
+    if (srch && document.activeElement !== srch && S.msQ[S.openMs]) {
+      srch.focus(); const L = srch.value.length; srch.setSelectionRange(L, L);
+    }
+  }
 }
 function renderChips(){
   const F = S.F, out = [];
-  FILTER_KEYS.forEach(k => { if (F[k]) out.push('<span class="chip">' + FLABEL[k] + ': <b>' + esc(k === 'store' ? storeName(F[k]) : F[k]) + '</b><button data-clear="' + k + '" aria-label="Bỏ lọc">×</button></span>'); });
+  FILTER_KEYS.forEach(k => {
+    const arr = fArr(F, k);
+    arr.forEach(v => {
+      out.push('<span class="chip">' + FLABEL[k] + ': <b>' + esc(k === 'store' ? storeName(v) : v) + '</b><button data-clear="' + k + '" data-cv="' + esc(v) + '" aria-label="Bỏ lọc">×</button></span>');
+    });
+  });
   if (F.dateFrom || F.dateTo) out.push('<span class="chip">Ngày bán: <b>' + (F.dateFrom ? fmtDM(F.dateFrom) : '…') + ' → ' + (F.dateTo ? fmtDM(F.dateTo) : '…') + '</b><button data-clear="date" aria-label="Bỏ lọc">×</button></span>');
   $('chips').innerHTML = out.join('');
 }
 function setFilter(k, v){
-  if (v === '' || v == null) delete S.F[k]; else S.F[k] = v;
-  if (k === 'asm') { delete S.F.province; delete S.F.store; }
-  if (k === 'province') delete S.F.store;
+  if (k === 'dateFrom' || k === 'dateTo') {
+    if (v === '' || v == null) delete S.F[k]; else S.F[k] = v;
+  } else {
+    const arr = Array.isArray(v) ? v.filter(x => x !== '' && x != null) : (v === '' || v == null ? [] : [v]);
+    if (!arr.length) delete S.F[k]; else S.F[k] = Array.from(new Set(arr));
+  }
+  S._cx = {};
+  pruneInvalidFilters(k);
   refresh();
 }
-function toggleFilter(k, v){ if (S.F[k] === v) setFilter(k, ''); else setFilter(k, v); }
+function toggleFilter(k, v){
+  const cur = fArr(S.F, k).slice();
+  const idx = cur.indexOf(v);
+  if (idx >= 0) cur.splice(idx, 1); else cur.push(v);
+  setFilter(k, cur);
+}
 function refresh(){ S._cx = {}; renderHeaderInfo(); renderFilters(); renderChips(); renderPage(); }
 function renderPage(){
   const empty = !S.M || S.M.empty;
@@ -1878,7 +2565,7 @@ function showPage(p){
 }
 function renderHeaderInfo(){
   const M = S.M, m = S.meta || {};
-  const pTxt = (S.F.program ? S.F.program : (M && M.program ? M.program : 'Chương trình Sale')).toUpperCase(); $('progName').textContent = pTxt; $('progName').title = pTxt;
+  const pTxt = (fArr(S.F,'program').length ? fArr(S.F,'program').join(' · ') : (M && M.program ? M.program : 'Chương trình Sale')).toUpperCase(); $('progName').textContent = pTxt; $('progName').title = pTxt;
   const ts = [m.inventory, m.sales, m.dimStore, m.dimProduct].filter(Boolean).map(x => x.time).sort().pop();
   $('updinfo').innerHTML = M && !M.empty ? 'Nạp dữ liệu: <b>' + (ts ? fmtTs(ts) : '—') + '</b><br>Bán đến ngày: <b>' + (M.dMax ? fmtDMY(M.dMax) : '—') + '</b>' : 'Chưa có dữ liệu';
 }
@@ -1908,7 +2595,10 @@ async function loadData(quiet, forceRepo){
     });
     S.M = buildModel(S.raw);
     Object.keys(S.F).forEach(k => {
-      if (FILTER_KEYS.indexOf(k) >= 0 && S.F[k] && !(S.M.opts[k] || []).concat(Array.from(S.M.geo.keys())).concat(Array.from(S.M.prods.keys())).includes(S.F[k])) delete S.F[k];
+      if (FILTER_KEYS.indexOf(k) < 0) return;
+      const pool = new Set((S.M.opts[k] || []).concat(Array.from(S.M.geo.keys())).concat(Array.from(S.M.prods.keys())));
+      const kept = fArr(S.F, k).filter(v => pool.has(v));
+      if (kept.length) S.F[k] = kept; else delete S.F[k];
     });
     renderHeaderInfo(); refresh();
     if (forceRepo) toast('Đã đọc lại dữ liệu gốc từ ' + TEMPLATE_FILE_NAME);
@@ -1922,38 +2612,88 @@ async function loadData(quiet, forceRepo){
 /* ---------- Sự kiện ---------- */
 document.addEventListener('click', e => {
   const t = e.target;
+  // Đóng/mở dropdown bộ lọc đa chọn
+  const mt = t.closest('[data-mstog]');
+  if (mt) {
+    const k = mt.dataset.mstog;
+    S.openMs = S.openMs === k ? null : k;
+    renderFilters();
+    return;
+  }
+  const ma = t.closest('[data-msall]');
+  if (ma) {
+    const k = ma.dataset.msall;
+    const qn = nk(S.msQ[k] || '');
+    const opts = getCascadedOpts(k).filter(o => !qn || nk(o[1]).includes(qn) || nk(o[0]).includes(qn)).map(o => o[0]);
+    const merged = Array.from(new Set(fArr(S.F, k).concat(opts)));
+    setFilter(k, merged);
+    return;
+  }
+  const mn = t.closest('[data-msnone]');
+  if (mn) { setFilter(mn.dataset.msnone, []); return; }
+  if (S.openMs && !t.closest('.ms')) { S.openMs = null; renderFilters(); }
+
   const clr = t.closest('[data-clear]');
-  if (clr) { const k = clr.dataset.clear; if (k === 'date') { delete S.F.dateFrom; delete S.F.dateTo; refresh(); } else setFilter(k, ''); return; }
+  if (clr) {
+    const k = clr.dataset.clear, cv = clr.dataset.cv;
+    if (k === 'date') { delete S.F.dateFrom; delete S.F.dateTo; refresh(); }
+    else if (cv != null) toggleFilter(k, cv);
+    else setFilter(k, []);
+    return;
+  }
   const th = t.closest('th[data-sort]');
   if (th) { const st = TB[th.dataset.id]; const k = th.dataset.sort; st.sort = st.sort && st.sort.k === k ? { k, dir: st.sort.dir === 'asc' ? 'desc' : 'asc' } : { k, dir: 'desc' }; drawTable(th.dataset.id); return; }
   const a = t.closest('[data-act]');
   if (a && a.tagName !== 'SELECT' && a.tagName !== 'INPUT') {
     const act = a.dataset.act;
-    if (act === 'clear') { S.F = {}; refresh(); return; }
+    if (act === 'clear') { S.F = {}; S.openMs = null; S.msQ = {}; refresh(); return; }
     if (act === 'tmore') { TB[a.dataset.id].limit += TB[a.dataset.id].pageSize * 2; drawTable(a.dataset.id); return; }
     if (act === 'tcsv') { downloadCSV(a.dataset.id); return; }
     if (act === 'pickSku') { if (S.role !== 'admin') return; const v = a.dataset.v; S.selSku = S.selSku === v ? null : v; if (S.page !== 'sku') { S.F.sku = undefined; delete S.F.sku; showPage('sku'); } else renderPage(); return; }
     if (act === 'quickflag') { const v = a.dataset.v; S.skuView = 'sku'; S.skuFlag = S.skuFlag === v ? 'all' : v; renderPage(); return; }
     if (act === 'quicktransfer') { S.skuView = S.skuView === 'transfer' ? 'sku' : 'transfer'; renderPage(); return; }
     if (act === 'copymail') { copyMails(); return; }
+    if (act === 'trApplyPct') { trApplyPctToAll(); return; }
+    if (act === 'trBulkCol') { trApplyBulkCol(a.dataset.disc); return; }
+    if (act === 'trClearTgt') { trClearTargets(); return; }
+    if (act === 'trExportPlan') { trExportPlanExcel(); return; }
+    if (act === 'trDlTpl') { trDownloadTargetTemplate(); return; }
+    if (act === 'trUpTpl') { $('trFileIn') && $('trFileIn').click(); return; }
+    if (act === 'trPushGh') { trPushTargetsToGithub(); return; }
   }
   const g = t.closest('[data-goto]'); if (g) { showPage(g.dataset.goto); return; }
   const set = t.closest('[data-set]');
-  if (set) { const o = JSON.parse(set.dataset.set), ks = Object.keys(o), all = ks.every(k => S.F[k] === o[k]); ks.forEach(k => { if (all) delete S.F[k]; else S.F[k] = o[k]; }); refresh(); return; }
+  if (set) {
+    const o = JSON.parse(set.dataset.set), ks = Object.keys(o), all = ks.every(k => fHas(S.F, k, o[k]));
+    ks.forEach(k => { if (all) { const cur = fArr(S.F, k).filter(x => x !== o[k]); if (cur.length) S.F[k] = cur; else delete S.F[k]; } else S.F[k] = [o[k]]; });
+    S._cx = {}; pruneInvalidFilters(); refresh(); return;
+  }
   const f = t.closest('[data-f]');
   if (f) { toggleFilter(f.dataset.f, f.dataset.v); return; }
 });
+document.addEventListener('keydown', e => { if (e.key === 'Escape' && S.openMs) { S.openMs = null; renderFilters(); } });
 document.addEventListener('change', e => {
   const t = e.target;
+  if (t.dataset.msk) { toggleFilter(t.dataset.msk, t.value); return; }
   if (t.dataset.fk) { setFilter(t.dataset.fk, t.value); return; }
+  if (t.id === 'trFileIn' && t.files && t.files[0]) { trImportTargetExcel(t.files[0]); t.value = ''; return; }
   const act = t.dataset.act;
   if (act === 'heatm') { S.heat[t.dataset.id] = t.value; renderPage(); }
   else if (act === 'skuview') { S.skuView = t.value; renderPage(); }
   else if (act === 'skuflag') { S.skuFlag = t.value; renderPage(); }
   else if (act === 'target') { const v = Math.max(1, Math.min(100, parseFloat(t.value) || 30)); S.target = v; try { localStorage.setItem('dash_target', v); } catch (x) {} refresh(); }
+  else if (act === 'trProg') { S.tr.prog = t.value; trLoadSaved(); renderPage(); }
+  else if (act === 'trScope') { S.tr.scope = t.value; renderPage(); }
+  else if (act === 'trMode') { S.tr.mode = t.value; renderPage(); }
+  else if (act === 'trSrc') { S.tr[t.dataset.k] = !!t.checked; renderPage(); }
+  else if (act === 'trPct') { S.tr.pcts[t.dataset.disc] = Math.max(0, parseFloat(t.value) || 0); trSaveLocal(); renderPage(); }
+  else if (act === 'trBulkTot') { S.tr.bulkTotal = Math.max(0, parseInt(t.value, 10) || 0); }
+  else if (act === 'trStTot') { trSetStoreTotal(t.dataset.st, Math.max(0, parseInt(t.value, 10) || 0)); }
+  else if (act === 'trCell') { trSetCell(t.dataset.st, t.dataset.disc, Math.max(0, parseInt(t.value, 10) || 0)); }
 });
 document.addEventListener('input', e => {
   const t = e.target;
+  if (t.dataset.mssrch) { S.msQ[t.dataset.mssrch] = t.value; renderFilters(); return; }
   if (t.dataset.act === 'tsearch') { const st = TB[t.dataset.id]; st.q = t.value; st.limit = st.pageSize; drawTable(t.dataset.id); }
 });
 $('nav').addEventListener('click', e => { const b = e.target.closest('button[data-page]'); if (b) showPage(b.dataset.page); });
@@ -2481,6 +3221,7 @@ $('btnLogout').addEventListener('click', () => {
     applyRole(savedRole);
   }
   fetchDbStatus(false);
+  trFetchFromGithub();
   loadData();
 })();
 
